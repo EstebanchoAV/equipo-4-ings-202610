@@ -1,20 +1,27 @@
-# Equipo-4-ings-202610
+# 🍽️ Antojos UPB — Equipo 4
 
-## Integrantes
-* Carlos Andres Arroyave Londoño
-* Esteban Alvarez Velasquez
-* Juan Pablo Henao Ramirez
-* Santiago Concha Morales
+> Proyecto de ingeniería de software — Universidad Pontificia Bolivariana | 2026-10
 
-## Tabla de navegación
-- Doc
-    - [index.md (Documentación del proyecto)](./doc/index.md)
+---
 
-    - Analysis
-        - [index.md (Tabla de navegación de Analysis)](./doc/analysis/index.md)
+## 👥 Integrantes
 
-        - [requirements-fn-md (Functional Requirement)](./doc/analysis/requirements-fn.md)
+| Nombre | GitHub |
+|---|---|
+| Carlos Andrés Arroyave Londoño | [@Andres-Arroyave](#) |
+| Esteban Álvarez Velásquez | [@EstebanchoAV](#) |
+| Juan Pablo Henao Ramírez | [@pablo-henao](#) |
+| Santiago Concha Morales | [@santiagoco55](#) |
 
-        - [requirements-nfn.md (Non-Functional Requirements)](./doc/analysis/requirements-nfn.md)
 
- - README.md (Equipo del proyecto) <--- Usted está aquí
+---
+
+## 📁 Tabla de navegación
+
+- 📄 README.md ← Usted está aquí
+- 📂 Doc
+    - [📄 index.md (Documentación del proyecto)](./doc/index.md)
+    - 📂 Analysis
+        - [📄 index.md (Tabla de navegación de Analysis)](./doc/analysis/index.md)
+        - [📄 requirements-fn.md (Requisitos Funcionales)](./doc/analysis/requirements-fn.md)
+        - [📄 requirements-nfn.md (Requisitos No Funcionales)](./doc/analysis/requirements-nfn.md)
