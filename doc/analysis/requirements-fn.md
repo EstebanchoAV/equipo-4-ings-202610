@@ -173,3 +173,194 @@ And no debe requerir intervención manual del vendedor
 ```
 
 ---
+
+## 🟡 Req 008 – Indicador visual "En campus"
+
+📝 **Descripción:** La tarjeta del vendedor debe mostrarse en blanco hueso cuando el vendedor está en la UPB.
+
+📌 **Prioridad:** P4
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Visualización de vendedor activo en campus**
+```gherkin
+Given que el vendedor ha indicado que se encuentra en el campus de la UPB
+When el usuario consulta la lista de vendedores
+Then la tarjeta del vendedor debe mostrarse en color blanco hueso
+And debe mostrar el indicador visual "En campus"
+```
+
+---
+
+## ⬜ Req 009 – Estado cerrado en gris
+
+📝 **Descripción:** Si el vendedor no está en la UPB, su tarjeta debe verse en gris con la leyenda "Cerrado".
+
+📌 **Prioridad:** P4
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Visualización de vendedor cerrado o fuera del campus**
+```gherkin
+Given que el vendedor no está disponible o no se encuentra en el campus
+When el usuario consulta la lista de vendedores
+Then la tarjeta del vendedor debe mostrarse en color gris
+And debe mostrar la etiqueta "Cerrado"
+```
+
+---
+
+## 📷 Req 010 – Foto de perfil del vendedor
+
+📝 **Descripción:** El sistema debe permitir subir una foto de perfil para cada vendedor.
+
+📌 **Prioridad:** P1
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Carga exitosa de foto de perfil**
+```gherkin
+Given que el vendedor está en la vista de configuración de su perfil
+When sube una imagen en formato JPG o PNG con un tamaño máximo de 5MB
+Then el sistema debe guardar la imagen correctamente
+And debe mostrarse en la tarjeta del vendedor dentro de la plataforma
+```
+
+**Scenario: Intento de subir un archivo inválido**
+```gherkin
+Given que el vendedor intenta subir una foto de perfil
+When el archivo supera los 5MB o no es formato JPG o PNG
+Then el sistema debe rechazar el archivo
+And debe mostrar un mensaje indicando los formatos y tamaño permitidos
+```
+
+---
+
+## 📝 Req 011 – Descripción de productos
+
+📝 **Descripción:** Los vendedores deben poder agregar una descripción breve de los productos o servicios que ofrecen.
+
+📌 **Prioridad:** P0
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Agregar descripción de productos**
+```gherkin
+Given que el vendedor está en la vista de configuración de su perfil
+When ingresa una descripción de sus productos de máximo 200 caracteres
+And guarda los cambios
+Then la descripción debe almacenarse correctamente
+And debe mostrarse en la vista pública del vendedor
+```
+
+**Scenario: Intento de ingresar descripción que supera el límite**
+```gherkin
+Given que el vendedor está redactando la descripción de sus productos
+When el texto supera los 200 caracteres
+Then el sistema debe impedir seguir escribiendo o mostrar una advertencia
+And no debe permitir guardar una descripción que exceda el límite
+```
+
+---
+
+## 🔍 Req 012 – Filtrar vendedores por tipo de producto
+
+📝 **Descripción:** Los usuarios deben poder filtrar vendedores por tipo de producto o servicio.
+
+📌 **Prioridad:** P0
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Filtrado exitoso por categoría**
+```gherkin
+Given que el usuario está en la vista principal de vendedores
+And existen vendedores con diferentes categorías de productos
+When selecciona una categoría desde el filtro disponible
+Then el sistema debe actualizar dinámicamente la lista
+And debe mostrar únicamente los vendedores que pertenecen a la categoría seleccionada
+```
+
+---
+
+## 🔎 Req 013 – Buscar vendedores por nombre
+
+📝 **Descripción:** Los usuarios deben poder buscar vendedores por nombre.
+
+📌 **Prioridad:** P0
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Búsqueda exitosa por nombre**
+```gherkin
+Given que el usuario está en la vista principal de vendedores
+And existe una barra de búsqueda visible
+When escribe el nombre o parte del nombre de un vendedor
+Then el sistema debe actualizar los resultados en tiempo real
+And debe mostrar todos los vendedores cuyo nombre coincida parcial o totalmente con el texto ingresado
+```
+
+**Scenario: Búsqueda sin resultados**
+```gherkin
+Given que el usuario escribe un nombre en la barra de búsqueda
+When el sistema no encuentra ningún vendedor con ese nombre
+Then debe mostrar un mensaje indicando que no se encontraron resultados
+```
+
+---
+
+## 📅 Req 014 – Ver horario semanal del vendedor
+
+📝 **Descripción:** Los usuarios deben poder ver el horario completo semanal de cada vendedor.
+
+📌 **Prioridad:** P0
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Visualización del horario semanal**
+```gherkin
+Given que el usuario consulta el perfil de un vendedor
+When accede a la sección de horario
+Then el sistema debe mostrar una tabla o lista organizada por días de la semana
+And debe indicar claramente la hora de inicio y la hora de fin de atención para cada día disponible
+```
+
+---
+
+## 🟢 Req 015 – Filtrar vendedores por disponibilidad
+
+📝 **Descripción:** Debe poder filtrarse la lista de vendedores por estado: disponible o no disponible.
+
+📌 **Prioridad:** P1
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Filtrado por estado de disponibilidad**
+```gherkin
+Given que el usuario está en la vista principal de vendedores
+When selecciona el filtro "Disponible" o "No disponible"
+Then el sistema debe actualizar la lista mostrando únicamente los vendedores que correspondan al estado seleccionado
+And no debe requerir recargar la página manualmente
+```
+
+---
+
+## 🚩 Req 016 – Reportar vendedores
+
+📝 **Descripción:** Debe permitirse reportar vendedores inactivos o con información incorrecta.
+
+📌 **Prioridad:** P3
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Reporte exitoso de un vendedor**
+```gherkin
+Given que el usuario está en la tarjeta o perfil de un vendedor
+And existe un botón "Reportar" visible
+When hace clic en el botón
+And selecciona o ingresa el motivo del reporte
+And confirma el envío
+Then el sistema debe almacenar el reporte en la base de datos
+And debe mostrar un mensaje de confirmación indicando que el reporte fue enviado
+```
+
+---
