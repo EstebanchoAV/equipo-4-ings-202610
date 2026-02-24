@@ -101,3 +101,45 @@ La interfaz debe ser intuitiva y permitir que un estudiante pueda contactar a un
 📌 **Prioridad:** P1
 
 ---
+
+## 📚 NF-08 – Disponibilidad
+### Alta disponibilidad en horario académico (6:00 a 21:00)
+
+📝 **Descripción**
+La aplicación debe estar disponible y operar con alta funcionalidad durante el horario académico de la UPB, cubriendo las necesidades de los estudiantes a lo largo de la jornada.
+
+🔎 **Criterios de aceptación**
+- La aplicación debe estar completamente operativa entre las 6:00 y las 21:00 horas.
+- Fuera de ese horario, el sistema puede mostrar un mensaje de "fuera de servicio".
+
+📌 **Prioridad:** P0
+
+---
+
+## 📚 NF-09 – Rendimiento
+### Actualización del estado en tiempo real
+
+📝 **Descripción**
+La aplicación debe reflejar el estado de disponibilidad de los vendedores en tiempo real, con un retraso máximo de 30 segundos, para que los compradores cuenten siempre con información actualizada.
+
+🔎 **Criterios de aceptación**
+- El estado de disponibilidad debe actualizarse automáticamente sin intervención del usuario.
+- El retraso entre el cambio real y su reflejo en la interfaz no debe superar los 30 segundos.
+
+📌 **Prioridad:** P2
+
+---
+
+## 📚 NF-10 – Seguridad
+### Seguridad y cifrado de datos
+
+📝 **Descripción**
+El sistema debe garantizar la protección de los datos personales de los usuarios mediante mecanismos de seguridad adecuados, asegurando la privacidad de los miembros de la comunidad "Antojos".
+
+🔎 **Criterios de aceptación**
+- Las contraseñas deben almacenarse cifradas mediante hashing (bcrypt o equivalente).
+- Toda la comunicación entre cliente y servidor debe realizarse mediante HTTPS.
+- No deben mostrarse datos sensibles en texto plano en ningún momento.
+- La sesión debe cerrarse automáticamente tras 30 minutos de inactividad.
+
+📌 **Prioridad:** P0
