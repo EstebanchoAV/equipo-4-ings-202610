@@ -364,3 +364,101 @@ And debe mostrar un mensaje de confirmación indicando que el reporte fue enviad
 ```
 
 ---
+
+## ⏰ Req 017 – Ventana emergente para extender horario
+
+📝 **Descripción:** El sistema debe mostrar una ventana emergente para que el vendedor pueda extender su horario antes de que cierre.
+
+📌 **Prioridad:** P4
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Notificación de cierre próximo**
+```gherkin
+Given que el vendedor tiene una sesión activa
+And faltan 15 minutos para que su horario de atención finalice
+When el sistema detecta ese umbral de tiempo
+Then debe mostrarse una notificación o ventana emergente informando que el horario está por cerrar
+And debe ofrecer al vendedor la opción de extender su horario manualmente
+```
+
+**Scenario: Extensión de horario exitosa**
+```gherkin
+Given que el vendedor recibió la notificación de cierre próximo
+When selecciona la opción de extender su horario
+Then el sistema debe actualizar la hora de cierre
+And el estado del vendedor debe permanecer como "Disponible" durante el tiempo extendido
+```
+
+---
+
+## 🗺️ Req 018 – Mapa estático de ubicación
+
+📝 **Descripción:** El sistema debe mostrar un mapa no interactivo con la ubicación de los vendedores con local fijo en el campus.
+
+📌 **Prioridad:** P4
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Visualización del mapa estático**
+```gherkin
+Given que el usuario consulta el perfil de un vendedor con local fijo en el campus
+When accede a la sección de ubicación
+Then el sistema debe mostrar una imagen estática con la ubicación del vendedor
+And el mapa no debe permitir zoom ni desplazamiento
+```
+
+---
+
+## 💬 Req 019 – Implementación de chat en tiempo real
+
+📝 **Descripción:** El sistema debe implementar un canal de comunicación mediante chat en tiempo real entre el comprador y el vendedor.
+
+📌 **Prioridad:** P0
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Apertura de chat con un vendedor**
+```gherkin
+Given que el usuario está en la vista de un vendedor específico
+When selecciona la opción de iniciar un chat
+Then el sistema debe abrir el canal de mensajería con ese vendedor
+And los mensajes deben enviarse y recibirse en tiempo real
+And cada mensaje debe mostrar la hora de envío
+```
+
+**Scenario: Notificación de mensaje nuevo**
+```gherkin
+Given que el usuario o vendedor tiene el chat activo o en segundo plano
+When recibe un nuevo mensaje
+Then el sistema debe notificar la llegada del mensaje
+```
+
+---
+
+## ⭐ Req 020 – Sistema de calificación de vendedores
+
+📝 **Descripción:** Los usuarios deben poder calificar y dejar una reseña a un vendedor después de haber interactuado con él.
+
+📌 **Prioridad:** P2
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Calificación exitosa de un vendedor**
+```gherkin
+Given que el usuario ha tenido una interacción con un vendedor
+And aún no ha calificado dicha interacción
+When selecciona entre 1 y 5 estrellas para calificar al vendedor
+And opcionalmente escribe una reseña de máximo 250 caracteres
+And envía la calificación
+Then el sistema debe almacenar la calificación y reseña en la base de datos
+And la calificación promedio del vendedor debe actualizarse y mostrarse en su tarjeta
+```
+
+**Scenario: Intento de calificar más de una vez la misma interacción**
+```gherkin
+Given que el usuario ya calificó una interacción específica con un vendedor
+When intenta enviar una nueva calificación para esa misma interacción
+Then el sistema debe impedir la acción
+And debe mostrar un mensaje indicando que ya realizó una calificación para esa interacción
+```
