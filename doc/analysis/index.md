@@ -1,7 +1,9 @@
 ## Tabla de navegación
-- Analysis
-    - index.md <--- Usted está aquí
 
-    - [requirements-fn-md (Functional Requirement)](requirements-fn.md)
+### 📁 Analysis
 
-    - [requirements-nfn.md (Non-Functional Requirements)](requirements-nfn.md)
+| Archivo | Descripción |
+|---|---|
+| index.md | Tabla de navegación de Analysis |
+| [requirements-fn.md](requirements-fn.md) | Requisitos Funcionales |
+| [requirements-nfn.md](requirements-nfn.md) | Requisitos No Funcionales |
