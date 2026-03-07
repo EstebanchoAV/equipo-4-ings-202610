@@ -19,14 +19,6 @@ Then el sistema debe almacenar el rol seleccionado en la base de datos
 And debe mostrar un mensaje de confirmación de registro exitoso
 ```
 
-**Scenario: Intento de tener ambos roles con la misma cuenta**
-```gherkin
-Given que el usuario ya tiene una cuenta registrada con un rol específico
-When intenta asignar un segundo rol diferente a la misma cuenta
-Then el sistema debe impedir la acción
-And debe mostrar un mensaje indicando que una cuenta no puede tener ambos roles
-```
-
 ---
 
 ## 📋 Req 002 – Creación de cuenta con información personal
@@ -64,35 +56,36 @@ And debe mostrar un mensaje indicando el requisito mínimo de la contraseña
 
 ---
 
-## ➕ Req 003 – Botón para agregar nuevos vendedores
+## ➕ Req 003 – Configuración de identidad del negocio
 
-📝 **Descripción:** Debe poderse agregar desde un botón la información de un vendedor nuevo y así actualizar la lista de vendedores.
+📝 **Descripción:** Un usuario registrado con rol de vendedor debe poder configurar la información de identidad de su negocio dentro de la plataforma, incluyendo el nombre del negocio y una presentación del emprendimiento que describa su historia o propuesta de valor.
 
-📌 **Prioridad:** P2
+📌 **Prioridad:** P1
 
 ✅ **Criterios de aceptación:**
 
-**Scenario: Agregar un nuevo vendedor desde el botón**
+**Scenario: Acceso a la edición del perfil de vendedor**
 ```gherkin
-Given que el usuario administrador está en la vista de lista de vendedores
-And existe un botón visible "Agregar vendedor"
-When hace clic en el botón
-Then el sistema debe abrir un formulario para ingresar la información del nuevo vendedor
+Given que el usuario ha iniciado sesión en el sistema
+And su cuenta tiene el rol "Vendedor"
+When accede a la sección de perfil de vendedor
+Then el sistema debe mostrar un formulario con su información actual de identidad del negocio
 ```
 
-**Scenario: Guardado exitoso del nuevo vendedor**
+**Scenario: Actualización de identidad del negocio**
 ```gherkin
-Given que el administrador ha completado el formulario de nuevo vendedor
-When guarda la información
-Then el vendedor debe aparecer automáticamente en la lista de vendedores
-And no debe ser necesario recargar la página
+Given que el vendedor se encuentra en el formulario de edición de perfil
+When modifica el nombre de su negocio o su presentación del emprendimiento
+And guarda los cambios
+Then el sistema debe actualizar la información en la base de datos
+And debe mostrar un mensaje confirmando que la información fue actualizada correctamente
 ```
 
 ---
 
-## ✏️ Req 004 – Edición de perfil
+## ✏️ Req 004 – Edición de datos de contacto
 
-📝 **Descripción:** Cada usuario debe poder editar su información de contacto (teléfono, WhatsApp, redes sociales).
+📝 **Descripción:** Cada usuario, sea comprador o vendedor debe poder editar su información de contacto (teléfono, WhatsApp, redes sociales).
 
 📌 **Prioridad:** P1
 
@@ -120,7 +113,7 @@ And debe mostrar un mensaje de confirmación de actualización exitosa
 
 **Scenario: Configuración exitosa de horario semanal**
 ```gherkin
-Given que el vendedor ha iniciado sesión
+Given que el vendedor ha iniciado sesión 
 And está en la vista de configuración de horario
 When selecciona los días de la semana en que estará disponible
 And define la hora de inicio y hora de fin para cada día
@@ -137,7 +130,7 @@ And debe mostrar un mensaje de error indicando que el horario es inválido
 
 ---
 
-## 🗂️ Req 006 – Visualización en cuadrículas por vendedor
+## 🗂️ Req 006 – Visualización en cuadrículas por vendedor para compradores
 
 📝 **Descripción:** La información de cada vendedor debe mostrarse en tarjetas que indiquen su disponibilidad y productos.
 
@@ -155,57 +148,96 @@ And la vista debe adaptarse correctamente a dispositivos móviles
 
 ---
 
-## 🔄 Req 007 – Estado de disponibilidad automático
+## 🔄 Req 007 – Gestión y visualización del estado del vendedor
 
-📝 **Descripción:** El estado del vendedor debe actualizarse automáticamente según su horario registrado.
+📝 **Descripción:** El sistema debe determinar automáticamente el estado del vendedor según su horario registrado y mostrarlo visualmente en la tarjeta del vendedor.
 
-📌 **Prioridad:** P3
+📌 **Prioridad:** P2
 
 ✅ **Criterios de aceptación:**
 
-**Scenario: Actualización automática del estado del vendedor**
+**Scenario: Actualización automática del estado**
 ```gherkin
 Given que el vendedor tiene un horario de disponibilidad registrado
 When el sistema verifica la hora actual
-Then el estado del vendedor debe cambiar automáticamente a "Disponible" o "Cerrado" según corresponda
-And la actualización debe ocurrir como máximo cada 30 segundos
-And no debe requerir intervención manual del vendedor
+Then el estado del vendedor debe actualizarse automáticamente
+And la actualización debe ocurrir cuando el usuario consulte la lista de vendedores
 ```
 
----
-
-## 🟡 Req 008 – Indicador visual "En campus"
-
-📝 **Descripción:** La tarjeta del vendedor debe mostrarse en blanco hueso cuando el vendedor está en la UPB.
-
-📌 **Prioridad:** P4
-
-✅ **Criterios de aceptación:**
-
-**Scenario: Visualización de vendedor activo en campus**
+**Scenario: Vendedor disponible en campus**
 ```gherkin
-Given que el vendedor ha indicado que se encuentra en el campus de la UPB
+Given que el vendedor está dentro de su horario registrado
+And ha indicado que se encuentra en el campus de la UPB
 When el usuario consulta la lista de vendedores
 Then la tarjeta del vendedor debe mostrarse en color blanco hueso
-And debe mostrar el indicador visual "En campus"
+And debe mostrar el indicador "Abierto"
 ```
 
----
-
-## ⬜ Req 009 – Estado cerrado en gris
-
-📝 **Descripción:** Si el vendedor no está en la UPB, su tarjeta debe verse en gris con la leyenda "Cerrado".
-
-📌 **Prioridad:** P4
-
-✅ **Criterios de aceptación:**
-
-**Scenario: Visualización de vendedor cerrado o fuera del campus**
+**Scenario: Vendedor no disponible**
 ```gherkin
-Given que el vendedor no está disponible o no se encuentra en el campus
+Given que el vendedor está fuera de su horario
 When el usuario consulta la lista de vendedores
 Then la tarjeta del vendedor debe mostrarse en color gris
 And debe mostrar la etiqueta "Cerrado"
+```
+
+---
+
+## ⏱️ Req 008 – Sobrescritura manual del estado del vendedor
+
+📝 **Descripción:** Un vendedor debe poder sobrescribir temporalmente su estado de disponibilidad mediante un botón, permitiéndole marcarse como "Abierto" o "Cerrado" por un tiempo determinado, independientemente de su horario registrado.
+
+📌 **Prioridad:** P2
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Activación manual del estado**
+```gherkin
+Given que el vendedor ha iniciado sesión en el sistema
+And se encuentra en su panel de vendedor
+When presiona el botón de control de disponibilidad
+Then el sistema debe permitirle seleccionar el estado "Abierto" o "Cerrado"
+And debe permitirle definir una duración para dicho estado
+```
+
+**Scenario: Sobrescritura manual a estado abierto**
+```gherkin
+Given que el vendedor ha activado la sobrescritura manual
+When selecciona el estado "Abierto" por un tiempo determinado
+Then el sistema debe mostrar al vendedor como "Abierto" durante ese tiempo
+```
+
+**Scenario: Sobrescritura manual a estado cerrado**
+```gherkin
+Given que el vendedor ha activado la sobrescritura manual
+When selecciona el estado "Cerrado" por un tiempo determinado
+Then el sistema debe mostrar al vendedor como "Cerrado" durante ese tiempo
+```
+
+**Scenario: Finalización del tiempo de sobrescritura**
+```gherkin
+Given que el vendedor activó una sobrescritura manual por un tiempo determinado
+When el tiempo definido finaliza
+Then el sistema debe restaurar automáticamente el estado calculado según el horario registrado
+```
+
+---
+
+## 🏷️ Req 009 – Selección de categoría de productos
+
+📝 **Descripción:** Los vendedores deben poder seleccionar una o varias categorías que representen el tipo de productos o servicios que ofrecen.
+
+📌 **Prioridad:** P0
+
+✅ **Criterios de aceptación:**
+
+**Scenario: Selección de categoría durante la configuración del perfil**
+```gherkin
+Given que el vendedor está en la vista de configuración de su perfil
+When selecciona una o varias categorías de productos disponibles
+And guarda los cambios
+Then el sistema debe almacenar las categorías seleccionadas en la base de datos
+And estas deben mostrarse en el perfil público del vendedor
 ```
 
 ---
@@ -236,29 +268,37 @@ And debe mostrar un mensaje indicando los formatos y tamaño permitidos
 
 ---
 
-## 📝 Req 011 – Descripción de productos
+## 📝 Req 011 – Descripción del catálogo de productos
 
-📝 **Descripción:** Los vendedores deben poder agregar una descripción breve de los productos o servicios que ofrecen.
+📝 **Descripción:** Los vendedores deben poder agregar una descripción breve de los productos o servicios específicos que ofrecen, la cual será visible públicamente en su tarjeta y perfil dentro de la plataforma.
 
 📌 **Prioridad:** P0
 
 ✅ **Criterios de aceptación:**
 
-**Scenario: Agregar descripción de productos**
+**Scenario: Agregar descripción del catálogo de productos**
 ```gherkin
 Given que el vendedor está en la vista de configuración de su perfil
-When ingresa una descripción de sus productos de máximo 200 caracteres
+When ingresa una descripción de sus productos o servicios de máximo 200 caracteres
 And guarda los cambios
-Then la descripción debe almacenarse correctamente
-And debe mostrarse en la vista pública del vendedor
+Then la descripción debe almacenarse correctamente en la base de datos
+And debe mostrarse en la tarjeta pública y en el perfil del vendedor
 ```
 
 **Scenario: Intento de ingresar descripción que supera el límite**
 ```gherkin
-Given que el vendedor está redactando la descripción de sus productos
+Given que el vendedor está redactando la descripción de su catálogo
 When el texto supera los 200 caracteres
 Then el sistema debe impedir seguir escribiendo o mostrar una advertencia
 And no debe permitir guardar una descripción que exceda el límite
+```
+
+**Scenario: Distinción visual entre identidad del negocio y catálogo**
+```gherkin
+Given que el usuario consulta el perfil público de un vendedor
+When visualiza la información del vendedor
+Then el sistema debe mostrar la presentación del emprendimiento y la descripción del catálogo en secciones claramente diferenciadas
+And cada sección debe tener una etiqueta que identifique su propósito
 ```
 
 ---
