@@ -450,28 +450,30 @@ And el mapa no debe permitir zoom ni desplazamiento
 
 ---
 
-## 💬 Req 019 – Implementación de chat en tiempo real
+## 💬 Req 019 – Contacto con el vendedor vía WhatsApp
 
-📝 **Descripción:** El sistema debe implementar un canal de comunicación mediante chat en tiempo real entre el comprador y el vendedor.
+📝 **Descripción:** El sistema debe permitir al comprador iniciar una conversación con el vendedor a través de WhatsApp, redirigiendo al número registrado por el vendedor en su perfil.
 
 📌 **Prioridad:** P0
 
 ✅ **Criterios de aceptación:**
 
-**Scenario: Apertura de chat con un vendedor**
+**Scenario: Contactar a un vendedor desde su perfil**
 ```gherkin
 Given que el usuario está en la vista de un vendedor específico
-When selecciona la opción de iniciar un chat
-Then el sistema debe abrir el canal de mensajería con ese vendedor
-And los mensajes deben enviarse y recibirse en tiempo real
-And cada mensaje debe mostrar la hora de envío
+And el vendedor tiene un número de WhatsApp registrado en su perfil
+When selecciona el botón "Contactar por WhatsApp"
+Then el sistema debe abrir WhatsApp con el número del vendedor
+And debe incluir un mensaje de texto predefinido que mencione la plataforma
 ```
 
-**Scenario: Notificación de mensaje nuevo**
+**Scenario: Vendedor sin número registrado**
 ```gherkin
-Given que el usuario o vendedor tiene el chat activo o en segundo plano
-When recibe un nuevo mensaje
-Then el sistema debe notificar la llegada del mensaje
+Given que el usuario está en la vista de un vendedor específico
+And el vendedor no tiene un número de WhatsApp registrado
+When intenta contactarlo
+Then el sistema debe ocultar o deshabilitar el botón de contacto
+And debe mostrar un mensaje indicando que el vendedor no tiene medio de contacto disponible
 ```
 
 ---
