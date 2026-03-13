@@ -20,13 +20,13 @@
 
 ## 📚 Requisitos no funcionales
 
-- (3pts) NF-02 – Responsive iOS y Android
-- (3pts) NF-04 – Acceso exclusivo para autenticados
-- (5pts) NF-08 – Alta disponibilidad 6:00–21:00
-- (5pts) NF-10 – Seguridad y cifrado de datos
-- (3pts) NF-03 – Navegación consistente
-- (3pts) NF-07 – Interfaz intuitiva (máx. 4 clics)
-- (5pts) NF-01 – Soporte de 100 usuarios concurrentes
-- (2pts) NF-09 – Estado del vendedor máx. 30 seg
+- (3pts) NF-02 – Compatibilidad
+- (3pts) NF-04 – Seguridad
+- (5pts) NF-08 – Disponibilidad
+- (5pts) NF-10 – Seguridad
+- (3pts) NF-03 – Usabilidad
+- (3pts) NF-07 – Usabilidad
+- (5pts) NF-01 – Rendimiento
+- (2pts) NF-09 – Rendimiento
 
 Total Puntos: 69
