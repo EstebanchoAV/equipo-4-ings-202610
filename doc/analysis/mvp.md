@@ -15,18 +15,14 @@
 - (1pts) REQ 019 – Canal de comunicación con el vendedor
 - (3pts) REQ 004 – Edición de datos de contacto
 - (5pts) REQ 007 – Estado automático del vendedor
-- (5pts) REQ 010 – Foto de perfil del vendedor
 - (2pts) REQ 015 – Filtrar vendedores por disponibilidad
 
 ## 📚 Requisitos no funcionales
 
 - (3pts) NF-02 – Compatibilidad
 - (3pts) NF-04 – Seguridad
-- (5pts) NF-08 – Disponibilidad
-- (5pts) NF-10 – Seguridad
 - (3pts) NF-03 – Usabilidad
 - (3pts) NF-07 – Usabilidad
-- (5pts) NF-01 – Rendimiento
 - (2pts) NF-09 – Rendimiento
 
-Total Puntos: 69
+Total Puntos: 49
