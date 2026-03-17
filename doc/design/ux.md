@@ -13,7 +13,7 @@ Los wireframes representan la estructura inicial de las pantallas del producto y
 
 ## /inicio_sesion
 
-![UX Inicio Sesión](./ux_inicio_sesion.jpg)
+![UX Inicio Sesión](./images/ux_inicio_sesion.jpg)
 
 Pantalla donde los usuarios ingresan sus credenciales para acceder al sistema.
 
