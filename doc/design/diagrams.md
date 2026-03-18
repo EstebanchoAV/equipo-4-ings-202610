@@ -9,3 +9,12 @@
 
 #### Diagrama de Secuencia 2
 ![Diagrama de Secuencia 2](./images/SequentialDiagram2.png)
+
+#### Diagrama Relacional
+![Diagrama Relacional](./images/EntityRelationshipDiagram.png)
+
+#### Diagrama de Componentes
+![Diagrama de Componentes](./images/ComponentsDiagram.png)
+
+#### Diagrama Ad hoc
+![Diagrama Ad hoc](./images/AdHocDiagram.png)
