@@ -70,12 +70,9 @@ Estudiantes interesados en adquirir alimentos dentro del campus de manera práct
 
 ---
 
-## Tabla de navegación
+## 🗂️ Tabla de Navegación
 
-### 📁 Analysis
-
-| Archivo | Descripción |
-|---|---|
-| [index.md](analysis/index.md) | Tabla de navegación de Analysis |
-| [requirements-fn.md](analysis/requirements-fn.md) | Requisitos Funcionales |
-| [requirements-nfn.md](analysis/requirements-nfn.md) | Requisitos No Funcionales |
+| 🚀 Sección | 📄 Descripción |
+|------------|----------------|
+| [📊 Análisis](./analysis/index.md) | Contiene los requisitos funcionales y no funcionales del sistema |
+| [🎨 Diseño](./design/index.md) | Contiene los diseño UX/UI, los UML y las decisiones Backend y Frontend |
