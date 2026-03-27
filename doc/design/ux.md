@@ -3,10 +3,6 @@
 Esta sección presenta los wireframes del sistema.  
 Los wireframes representan la estructura inicial de las pantallas del producto y permiten visualizar la organización de los elementos antes de implementar el diseño visual final.
 
-## Documento completo de wireframes
-
-[Ver documento completo de wireframes]()
-
 ---
 
 # Autenticación
