@@ -76,3 +76,4 @@ Estudiantes interesados en adquirir alimentos dentro del campus de manera práct
 |------------|----------------|
 | [📊 Análisis](./analysis/index.md) | Contiene los requisitos funcionales y no funcionales del sistema |
 | [🎨 Diseño](./design/index.md) | Contiene los diseño UX/UI, los UML y las decisiones Backend y Frontend |
+| [🏃 Sprint](./sprint.md) | Contiene la planificación del sprint, backlog, tareas asignadas, seguimiento del progreso y retrospectiva |
