@@ -10,6 +10,7 @@
 2. [Nuestra solución](#2-nuestra-solución)
 3. [Público objetivo](#3-público-objetivo)
 4. [Tabla de navegación](#tabla-de-navegación)
+5. [URL tablero Backlog](#url-tablero-backlog)
 
 ---
 
@@ -77,3 +78,6 @@ Estudiantes interesados en adquirir alimentos dentro del campus de manera práct
 | [📊 Análisis](./analysis/index.md) | Contiene los requisitos funcionales y no funcionales del sistema |
 | [🎨 Diseño](./design/index.md) | Contiene los diseño UX/UI, los UML y las decisiones Backend y Frontend |
 | [🏃 Sprint](./sprint.md) | Contiene la planificación del sprint, backlog, tareas asignadas, seguimiento del progreso y retrospectiva |
+
+## 🗂️ URL tablero Backlog
+[URL tablero backlog en Trello](https://trello.com/b/rXrTiqIQ/backlog-de-antojapp)
