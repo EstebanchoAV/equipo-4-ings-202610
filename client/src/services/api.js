@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // CAMBIAR POR EL IP LOCAL
-const SERVER_URL = 'http://192.168.40.73:8080';
+const SERVER_URL = 'http://10.37.63.66:8080';
 
 const api = axios.create({
     baseURL: SERVER_URL,
@@ -13,7 +13,7 @@ const api = axios.create({
 
 export const checkServerHealth = async () => {
     try {
-        const response = await api.get('/api/health');
+        const response = await api.get('/api/saludo');
         return response.data;
     } catch (error) {
         console.error('Error al conectar con el servidor:', error.message);

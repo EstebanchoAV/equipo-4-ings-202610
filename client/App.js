@@ -1,9 +1,17 @@
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
-import { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { checkServerHealth } from './src/services/api';
 
-export default function App() {
+import LoginScreen from './src/screens/LoginScreen';
+import ClientRegisterScreen from './src/screens/ClientRegisterScreen';
+import VendorRegisterScreen from './src/screens/VendorRegisterScreen';
+
+const Stack = createNativeStackNavigator();
+
+function HomeScreen({ navigation }) {
   const [serverStatus, setServerStatus] = useState('checking');
   const [serverData, setServerData] = useState(null);
 
@@ -38,9 +46,43 @@ export default function App() {
         )}
       </View>
 
-      <Text style={styles.info}>Sprint 1: Integración inicial lista</Text>
-      <StatusBar style="auto" />
+      <TouchableOpacity 
+        style={styles.navButton} 
+        onPress={() => navigation.navigate('Login')}
+      >
+        <Text style={styles.navButtonText}>Ir al Inicio de Sesión</Text>
+      </TouchableOpacity>
+
     </View>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen 
+          name="Home" 
+          component={HomeScreen} 
+          options={{ title: 'Inicio' }} 
+        />
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen} 
+          options={{ title: 'Ingresar', headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="ClientRegister" 
+          component={ClientRegisterScreen} 
+          options={{ title: 'Registro Cliente', headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="VendorRegister" 
+          component={VendorRegisterScreen} 
+          options={{ title: 'Registro Vendedor', headerShown: false }} 
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -82,6 +124,23 @@ const styles = StyleSheet.create({
     color: '#d32f2f',
     textAlign: 'center',
     fontWeight: '600',
+  },
+  navButton: {
+    backgroundColor: '#4f46e5',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 10,
+    shadowColor: '#4f46e5',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  navButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   info: {
     fontSize: 12,
