@@ -4,6 +4,8 @@ import { Picker } from '@react-native-picker/picker';
 import BackButton from '../Components/BackButton';
 import BoxSha from '../Components/BoxSha';
 import ScreenLayout from '../Components/ScreenLayout';
+import { registerVendor } from '../services/authService';
+import { validateVendorDetailsForm } from '../utils/validators';
 
 const VendorDetailsScreen = ({ route, navigation }) => {
     const { initialData } = route.params || {};
@@ -28,27 +30,16 @@ const VendorDetailsScreen = ({ route, navigation }) => {
         }
     };
 
-    const regexText = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s]+$/;
-
     const handleFinalRegister = async () => {
-
-        let errors = [];
 
         const ds = description.trim();
         const wl = whatsappLink.trim();
 
-        if (!ds || !wl || !categoryId) {
-            errors.push("• Todos los campos son obligatorios.");
-        }
-
-        if (!regexText.test(ds)) {
-            errors.push("• La descripción no es válida.");
-        }
+        const errors = validateVendorDetailsForm(ds, categoryId, wl);
 
         if (errors.length > 0) {
             showAlert("Campos incorrectos", errors.join("\n"));
             return;
-
         }
 
 
@@ -64,26 +55,19 @@ const VendorDetailsScreen = ({ route, navigation }) => {
                 contactoVen: wl
             };
 
-            const response = await fetch('http://localhost:8080/api/auth/registro/vendedor', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
+            await registerVendor(payload);
+
+            showAlert("¡Éxito!", "Vendedor registrado correctamente", () => {
+                navigation.navigate('Login');
             });
-
-            const responseText = await response.text();
-
-            if (response.ok) {
-                showAlert("¡Éxito!", "Vendedor registrado correctamente", () => {
-                    navigation.navigate('Login');
-                });
-            } else {
-                showAlert("Aviso", responseText || "Tuvimos un problema con el registro");
-            }
+            
         } catch (error) {
             console.error(error);
-            showAlert("Error de conexión", "No se pudo conectar con el servidor. Verifica tu IP e intenta de nuevo.");
+            const message = error.message === "Failed to fetch" || error.message.includes("Network Error") 
+                ? "No se pudo conectar con el servidor. Verifica tu IP e intenta de nuevo." 
+                : error.message;
+                
+            showAlert("Aviso", message);
         }
     };
 

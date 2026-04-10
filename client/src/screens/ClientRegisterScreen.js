@@ -11,6 +11,8 @@ import {
 import BackButton from '../Components/BackButton';
 import ScreenLayout from '../Components/ScreenLayout';
 import BoxSha from '../Components/BoxSha';
+import { registerClient } from '../services/authService';
+import { validateClientForm } from '../utils/validators';
 
 const ClientRegisterScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -27,41 +29,15 @@ const ClientRegisterScreen = ({ navigation }) => {
     }
   };
 
-  const regexName = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]{2,70}$/;
-  const regexEmail = /^[A-Za-z0-9\.-_]+@[\w\d]+\.\w+$/;
-  const regexPhone = /^[3]{1}[0-5]{1}[0-9]{8}$/;
-
   const handleRegister = async () => {
     
-    let errors = [];
-
-    //Limpieza de espacios y validación de campos vacíos
+    //Limpieza de espacios
     const n = name.trim();
     const e = email.trim();
     const t = telephone.trim();
     const p = password.trim();
 
-    if (!n || !e || !t || !p) {
-      errors.push("• Todos los campos son obligatorios.");
-    }
-
-    // 2. Validaciones de formato
-    if (n && !regexName.test(n)) {
-      errors.push("• El nombre no es valido o es demasiado corto");
-    }
-
-
-    if (e && !regexEmail.test(e)) {
-      errors.push("• El correo electrónico no es válido.");
-    }
-
-    if (t && !regexPhone.test(t)) {
-      errors.push("• El teléfono debe empezar con 3 y tener 10 dígitos.");
-    }
-
-    if (p && p.length < 8) {
-      errors.push("• La contraseña debe tener al menos 8 caracteres.");
-    }
+    const errors = validateClientForm(n, e, t, p);
 
     if (errors.length > 0) {
       showAlert("Campos incorrectos", errors.join("\n"));
@@ -69,37 +45,29 @@ const ClientRegisterScreen = ({ navigation }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/registro/cliente', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nombreClient: n,
-          email: e,
-          contrasena: p,
-          telefono: t
-        }),
+      await registerClient({
+        nombreClient: n,
+        email: e,
+        contrasena: p,
+        telefono: t
       });
 
-      const responseText = await response.text();
+      setName('');
+      setTelephone('');
+      setEmail('');
+      setPassword('');
 
-      if (response.ok) {
-        setName('');
-        setTelephone('');
-        setEmail('');
-        setPassword('');
-  
-
-        showAlert("¡Éxito!", "Cliente registrado correctamente", () => {
-          navigation.navigate('Login');
-        });
-      } else {
-        showAlert("Aviso", responseText || "Tuvimos un problema con el registro");
-      }
+      showAlert("¡Éxito!", "Cliente registrado correctamente", () => {
+        navigation.navigate('Login');
+      });
     } catch (error) {
       console.error(error);
-      showAlert("Error de conexión", "No se pudo conectar con el servidor.");
+      
+      const message = error.message === "Failed to fetch" || error.message.includes("Network Error") 
+        ? "No se pudo conectar con el servidor." 
+        : error.message;
+        
+      showAlert("Aviso", message);
     }
   };
 

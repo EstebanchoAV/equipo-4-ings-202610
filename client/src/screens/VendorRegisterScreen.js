@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } 
 import BackButton from '../Components/BackButton';
 import BoxSha from '../Components/BoxSha';
 import ScreenLayout from '../Components/ScreenLayout';
+import { validateVendorBasicForm } from '../utils/validators';
 
 const VendorRegisterScreen = ({ navigation }) => {
   const [businessName, setBusinessName] = useState('');
@@ -21,52 +22,19 @@ const VendorRegisterScreen = ({ navigation }) => {
     }
   };
 
-  const regexName = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]{2,70}$/;
-  const regexEmail = /^[A-Za-z0-9\.-_]+@[\w\d]+\.\w+$/;
-  const regexPhone = /^[3]{1}[0-5]{1}[0-9]{8}$/;
-
   const handleNextStep = () => {
     
-    let errors = [];
-
     const b = businessName.trim();
     const o = ownerName.trim();
     const e = email.trim();
     const t = telephone.trim();
     const p = password.trim();
 
-    if (!b || !o || !e || !t || !p) {
-      errors.push("Todos los campos son obligatorios.");
-    }
-
-    
-    if (b && !regexName.test(b)) {
-      errors.push("Error", "El nombre del negocio no es válido o es demasiado corto");
-    }
-
-  
-    if (o && !regexName.test(o)) {
-      errors.push("Error", "El nombre del propietario no es válido o es demasiado corto");
-    }
-
-   
-    if (e && !regexEmail.test(e)) {
-      errors.push("Error", "El correo electrónico no es válido");
-    }
-
-    
-    if (t && !regexPhone.test(t)) {
-      errors.push("Error", "El número de teléfono debe ser válido y comenzar con 3");
-    }
-
-    if (p && p.length < 8) {
-      errors.push("Error", "La contraseña debe tener al menos 8 caracteres.");
-    }
+    const errors = validateVendorBasicForm(b, o, e, t, p);
 
     if (errors.length > 0) {
       showAlert("Campos incorrectos", errors.join("\n"));
       return;
-
     }
 
     navigation.navigate('VendorDetails', {
