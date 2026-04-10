@@ -1,0 +1,212 @@
+package com.equipo4.antojosupb.services;
+
+import com.equipo4.antojosupb.dto.RegistroRequest;
+import com.equipo4.antojosupb.entities.*;
+import com.equipo4.antojosupb.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.regex.Pattern;
+
+import java.time.LocalDateTime;
+
+@Service
+public class RegistroService {
+
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9\\.-_]+@[\\w\\d]+\\.\\w+$");
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^[3]{1}[0-5]{1}[0-9]{8}$");
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private VendedorRepository vendedorRepository;
+
+    @Autowired
+    private RolUsuarioRepository rolUsuarioRepository;
+
+    @Autowired
+    private CategoriaVendedorRepository categoriaVendedorRepository;
+
+    @Transactional
+    public String registrarCliente(RegistroRequest request) {
+
+        // Validación Cliente
+
+        // Validación del nombre del cliente: no nulo, no vacío, solo letras y espacios
+        if (request.getNombreClient() == null || request.getNombreClient().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del cliente es obligatorio.");
+        }
+
+        // Validación del formato del nombre del cliente: solo letras incluyendo acentos
+        // y espacios
+        if (!NAME_PATTERN.matcher(request.getNombreClient()).matches()) {
+            throw new IllegalArgumentException("El nombre del cliente solo puede contener letras y espacios.");
+        }
+
+        // Validación del teléfono: no nulo, no vacío
+        if (request.getTelefono() == null || request.getTelefono().trim().isEmpty()) {
+            throw new IllegalArgumentException("El teléfono es obligatorio.");
+        }
+        // validación del formato del teléfono: debe iniciar con 3, seguido de un dígito
+        // entre 0 y 5, y luego 8 dígitos más
+        if (request.getTelefono() != null && usuarioRepository.existsByTelefono(request.getTelefono())) {
+            throw new IllegalArgumentException("El número de teléfono ya está registrado.");
+        }
+        // Validación del formato del teléfono: debe iniciar con 3, seguido de un dígito
+        // entre 0 y 5,
+        if (request.getTelefono() != null && !PHONE_PATTERN.matcher(request.getTelefono()).matches()) {
+            throw new IllegalArgumentException("El formato del teléfono no es válido.");
+        }
+
+        // Validación de email: no nulo, no vacío
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("El email es obligatorio.");
+        }
+        // Validación del formato del email
+        if (!EMAIL_PATTERN.matcher(request.getEmail()).matches()) {
+            throw new IllegalArgumentException("El formato del email no es válido.");
+        }
+        // Validación de unicidad del email
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("El email ya está registrado.");
+        }
+        // Validación de la contraseña: no nulo, no vacío, mínimo 8 caracteres
+        if (request.getContrasena() == null || request.getContrasena().length() < 8) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres.");
+        }
+
+        // 1. Registrar Usuario General
+        Usuario usuario = new Usuario();
+        usuario.setEmail(request.getEmail());
+        usuario.setContrasena(request.getContrasena()); // TODO: En el futuro se debe encriptar la contraseña
+        usuario.setTelefono(request.getTelefono()); // Añadir teléfono
+        usuario.setFechaRegis(LocalDateTime.now());
+
+        // Rol 2 para Cliente
+        RolUsuario rol = rolUsuarioRepository.findById(2)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Rol de Cliente no encontrado en la base de datos (se esperaba IdRol = 2)."));
+        usuario.setRol(rol);
+
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+
+        // 2. Guardar en tabla CLIENTES
+        Cliente cliente = new Cliente();
+        cliente.setNombreClient(request.getNombreClient());
+        cliente.setUsuario(usuarioGuardado);
+        clienteRepository.save(cliente);
+
+        return "Cliente registrado con éxito.";
+    }
+
+    @Transactional
+    public String registrarVendedor(RegistroRequest request) {
+
+        // Validación nombre propietario: solo letras incluyendo acentos y espacios
+        if (!NAME_PATTERN.matcher(request.getNombrePropietario()).matches()) {
+            throw new IllegalArgumentException("El nombre del propietario no es válido.");
+        }
+        // Validación nombre propietario: no nulo, no vacío
+        if (request.getNombrePropietario() == null || request.getNombrePropietario().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del propietario es obligatorio.");
+
+        }
+
+        // Validación nombre negocio: no nulo, no vacío
+        if (request.getNombreNegocio() == null || request.getNombreNegocio().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del negocio es obligatorio.");
+        }
+        // Validacion de la unicidad del nombre del negocio
+        if (vendedorRepository.existsByNombreNegocio(request.getNombreNegocio())) {
+            throw new IllegalArgumentException("El nombre del negocio ya está en uso.");
+        }
+        // Validación del formato del nombre del negocio:  solo letras incluyendo acentos y espacios
+        if (!NAME_PATTERN.matcher(request.getNombreNegocio()).matches()) {
+            throw new IllegalArgumentException("El nombre del negocio no es válido. Solo puede contener letras y espacios.");
+        }
+        
+        //Validacion del formato del email
+        if (!EMAIL_PATTERN.matcher(request.getEmail()).matches()) {
+            throw new IllegalArgumentException("El formato del email no es válido.");
+        }
+        // Validación de email: no nulo, no vacío
+        if (request.getContrasena() == null || request.getContrasena().length() < 8) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres.");
+        }
+        // Validación de unicidad del email
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("El email ya está registrado.");
+        }
+
+        // Validación de la unicidad del teléfono
+        if (request.getTelefono() != null && usuarioRepository.existsByTelefono(request.getTelefono())) {
+            throw new IllegalArgumentException("El número de teléfono ya está registrado.");
+        }
+        // Validación del formato del teléfono: debe iniciar con 3, seguido de un dígito entre 0 y 5, y luego 8 dígitos más
+        if (request.getTelefono() != null && !PHONE_PATTERN.matcher(request.getTelefono()).matches()) {
+            throw new IllegalArgumentException("El formato del teléfono no es válido.");
+        }
+        //Validacion telefono: no nulo, no vacío
+        if (request.getTelefono() == null || request.getTelefono().trim().isEmpty()) {
+            throw new IllegalArgumentException("El teléfono es obligatorio.");
+        }
+        
+        //Validacion de la descripción del negocio: no nulo, no vacío
+        if (request.getDescripcionNeg() == null || request.getDescripcionNeg().trim().isEmpty()) {
+            throw new IllegalArgumentException("La descripción del negocio es obligatoria.");
+        }
+        // Validación del formato de la descripción del negocio: solo letras incluyendo acentos y espacios
+        if (!NAME_PATTERN.matcher(request.getDescripcionNeg()).matches()) {
+            throw new IllegalArgumentException("La descripción del negocio no es válida. Solo puede contener letras y espacios.");
+        }
+
+        // Validacion de la descripcion del negocion: no nulo, no vacío
+        if (request.getDescripcionNeg() == null || request.getDescripcionNeg().trim().isEmpty()) {
+            throw new IllegalArgumentException("La descripción del negocio es obligatoria.");
+        }
+
+        // Validación del contacto del vendedor: no nulo, no vacío
+        if (request.getContactoVen() == null || request.getContactoVen().trim().isEmpty()) {
+            throw new IllegalArgumentException("El contacto del vendedor es obligatorio.");
+        }
+
+        // 1. Registrar Usuario General
+        Usuario usuario = new Usuario();
+        usuario.setEmail(request.getEmail());
+        usuario.setContrasena(request.getContrasena()); 
+        usuario.setTelefono(request.getTelefono()); 
+        usuario.setFechaRegis(LocalDateTime.now());
+
+        // Rol 1 para Vendedor
+        RolUsuario rol = rolUsuarioRepository.findById(1)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Rol de Vendedor no encontrado en la base de datos (se esperaba IdRol = 1)."));
+        usuario.setRol(rol);
+
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+
+        // 2. Guardar en tabla VENDEDORES
+        Vendedor vendedor = new Vendedor();
+        vendedor.setNombreNegocio(request.getNombreNegocio());
+        vendedor.setNombrePropietario(request.getNombrePropietario());
+        vendedor.setDescripcionNeg(request.getDescripcionNeg());
+        vendedor.setContactoVen(request.getContactoVen());
+        vendedor.setUsuario(usuarioGuardado);
+
+        if (request.getIdCategoriaV() != null) {
+            CategoriaVendedor categoria = categoriaVendedorRepository.findById(request.getIdCategoriaV())
+                    .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada."));
+            vendedor.setCategoriaVendedor(categoria);
+        } else {
+            throw new IllegalArgumentException("La categoría del vendedor es requerida.");
+        }
+
+        vendedorRepository.save(vendedor);
+        return "Vendedor registrado con éxito.";
+    }
+}
