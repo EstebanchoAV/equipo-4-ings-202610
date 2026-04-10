@@ -2,7 +2,7 @@
  * Expresiones regulares centrales utilizadas en los formularios.
  */
 const regexName = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]{2,70}$/;
-const regexEmail = /^[A-Za-z0-9\.-_]+@[\w\d]+\.\w+$/;
+const regexEmail = /^(?=.{1,64}@)[_a-z0-9-]+(([\.])[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$/;
 const regexPhone = /^[3]{1}[0-5]{1}[0-9]{8}$/;
 const regexText = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s]+$/;
 

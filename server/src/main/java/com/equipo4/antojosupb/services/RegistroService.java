@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class RegistroService {
 
     private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$");
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9\\.-_]+@[\\w\\d]+\\.\\w+$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^(?=[^@]{3,64}@)[_a-z0-9-]+(([\\.])[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,6})$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("^[3]{1}[0-5]{1}[0-9]{8}$");
 
     @Autowired
