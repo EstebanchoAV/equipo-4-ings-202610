@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import BackButton from '../Components/BackButton';
 import BoxSha from '../Components/BoxSha';
 import ScreenLayout from '../Components/ScreenLayout';
 import { registerVendor } from '../services/authService';
@@ -73,8 +72,6 @@ const VendorDetailsScreen = ({ route, navigation }) => {
 
     return (
         <ScreenLayout scrollStyle={styles.scrollContainer}>
-
-            <BackButton navigation={navigation} />
 
             <View style={styles.formContainer}>
 

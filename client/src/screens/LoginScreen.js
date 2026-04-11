@@ -4,23 +4,63 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  View
+  View,
+  Alert,
+  Platform,
+  ActivityIndicator
 } from 'react-native';
-import BackButton from '../Components/BackButton';
+import { useNavigation } from '@react-navigation/native';
 import ScreenLayout from '../Components/ScreenLayout';
 import BoxSha from '../Components/BoxSha';
+import { login } from '../services/authService';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ onLoginSuccess }) => {
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log('Login attempt with:', email, password);
+  const showAlert = (title, message, onOk) => {
+    if (Platform.OS === 'web') {
+      alert(`${title}: ${message}`);
+      if (onOk) onOk();
+    } else {
+      Alert.alert(title, message, onOk ? [{ text: "OK", onPress: onOk }] : [{ text: "OK" }]);
+    }
+  };
+
+  const handleLogin = async () => {
+    const e = email.trim();
+    const p = password.trim();
+
+    if (!e || !p) {
+      showAlert("Campos requeridos", "Por favor ingresa tu correo y contraseña.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const userData = await login(e, p);
+      console.log('Login exitoso:', userData);
+      
+      setEmail('');
+      setPassword('');
+      onLoginSuccess();
+    } catch (error) {
+      console.error('Error de login:', error);
+      const message = error.message === "Failed to fetch" || error.message.includes("Network Error")
+        ? "No se pudo conectar con el servidor."
+        : error.message;
+      
+      showAlert("Error de autenticación", message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <ScreenLayout scrollStyle={styles.scrollContainer}>
-      <BackButton navigation={navigation} />
 
       <View style={styles.formContainer}>
 
@@ -37,6 +77,7 @@ const LoginScreen = ({ navigation }) => {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
+            editable={!loading}
           />
 
 
@@ -48,10 +89,19 @@ const LoginScreen = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            editable={!loading}
           />
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+          <TouchableOpacity 
+            style={[styles.loginButton, loading && styles.loginButtonDisabled]} 
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+            )}
           </TouchableOpacity>
 
 
@@ -135,6 +185,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  loginButtonDisabled: {
+    backgroundColor: '#f87171',
   },
   loginButtonText: {
     color: '#ffffff',

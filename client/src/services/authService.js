@@ -3,7 +3,7 @@
  * NOTA: En ambiente local (emuladores u otros dispositivos en red), debes cambiar 
  * 'localhost' por la dirección IP de tu máquina (ej. http://192.168.x.x:8080/...).
  */
-const API_URL = 'http://localhost:8080/api/auth';
+const API_URL = 'http://192.168.1.122:8080/api/auth';
 
 /**
  * Consume el endpoint /registro/cliente para crear una cuenta de Cliente.
@@ -71,6 +71,28 @@ export const registerVendor = async (vendorData) => {
     }
 
     return responseText;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const login = async (email, password) => {
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, contrasena: password }),
+    });
+
+    if (!response.ok) {
+      const responseText = await response.text();
+      throw new Error(responseText || "Credenciales inválidas");
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     throw error;
   }

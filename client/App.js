@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,154 +9,62 @@ import LoginScreen from './src/screens/LoginScreen';
 import ClientRegisterScreen from './src/screens/ClientRegisterScreen';
 import VendorRegisterScreen from './src/screens/VendorRegisterScreen';
 import VendorDetailsScreen from './src/screens/VendorDetailsScreen';
-import ScreenLayout from './src/Components/ScreenLayout';
-import BoxSha from './src/Components/BoxSha';
+import HomeScreen from './src/screens/HomeScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const CustomTabButton = ({ children, onPress }) => (
-
   <TouchableOpacity
-    style={{
-      top: -5,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
+    style={styles.customTabButton}
     onPress={onPress}
   >
-
-    <View style={{
-      width: 60,
-      height: 60,
-      borderRadius: 30,
-      backgroundColor: 'rgb(232, 17, 35)',
-      elevation: 5,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
-      shadowRadius: 3,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
+    <View style={styles.customTabButtonInner}>
       {children}
-
     </View>
   </TouchableOpacity>
-
 );
 
-function DummyScreen({ route, navigation }) {
+function MenuScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 18, color: '#999' }}>Próximamente</Text>
+    <View style={styles.dummyContainer}>
+      <Text style={styles.dummyText}>Próximamente</Text>
     </View>
   );
 }
 
-//Pantalla principal AGREGAR COMPONENTES NUEVOS ACÁ
-function HomeScreen({ navigation }) {
-  
-
+function LoginStack({ onLoginSuccess }) {
   return (
-    <ScreenLayout>
-
-    {/*Por el momento todos los elementos van a estar con los estilos aplicados a .container,
-     si quiere cambiar los estilos aplique cambios a .container
-     */}
-     
-      <View style={styles.container}>
-
-        <Text style={{ fontSize: 18, color: '#999' }}>Próximamente</Text>
-
-      </View>
-
-    </ScreenLayout>
-  );
-}
-
-/**
- * MainStack
- * 
- * Este componente agrupa todas las pantallas de flujo de la aplicación (como Login, Registros, Detalles) 
- * dentro de un Stack Navigator. Al ubicar este Stack *dentro* de uno de los Tabs (en lugar de poner 
- * el Tab dentro del Stack), logramos que al navegar hacia 'Login' o 'ClientRegister',
- * la barra de pestañas (Tab Bar) inferior de MainTabs se mantenga visible.
- */
-
-function MainStack() {
-  return (
-    <Stack.Navigator initialRouteName="HomePrimary">
-      <Stack.Screen
-        name="HomePrimary"
-        component={HomeScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ title: 'Ingresar', headerShown: false }}
-      />
-      <Stack.Screen
-        name="ClientRegister"
+    <Stack.Navigator>
+      <Stack.Screen name="Login" options={{ headerShown: false }}>
+        {() => <LoginScreen onLoginSuccess={onLoginSuccess} />}
+      </Stack.Screen>
+      <Stack.Screen 
+        name="ClientRegister" 
         component={ClientRegisterScreen}
-        options={{ title: 'Registro Cliente', headerShown: false }}
+        options={{ title: 'Registro Cliente' }}
       />
-      <Stack.Screen
-        name="VendorRegister"
+      <Stack.Screen 
+        name="VendorRegister" 
         component={VendorRegisterScreen}
-        options={{ title: 'Registro Vendedor', headerShown: false }}
+        options={{ title: 'Registro Vendedor' }}
       />
-      <Stack.Screen
-        name="VendorDetails"
+      <Stack.Screen 
+        name="VendorDetails" 
         component={VendorDetailsScreen}
-        options={{ title: 'Detalles del Negocio', headerShown: false }}
+        options={{ title: 'Detalles del Negocio' }}
       />
     </Stack.Navigator>
   );
 }
 
-
-function AuthStack() {
-  return (
-    <Stack.Navigator initialRouteName="Login">
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ title: 'Ingresar', headerShown: false }}
-      />
-      <Stack.Screen
-        name="ClientRegister"
-        component={ClientRegisterScreen}
-        options={{ title: 'Registro Cliente', headerShown: false }}
-      />
-      <Stack.Screen
-        name="VendorRegister"
-        component={VendorRegisterScreen}
-        options={{ title: 'Registro Vendedor', headerShown: false }}
-      />
-      <Stack.Screen
-        name="VendorDetails"
-        component={VendorDetailsScreen}
-        options={{ title: 'Detalles del Negocio', headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
-}
-
-/**
- * MainTabs (Barra de Navegación Inferior)
- * 
- * Contiene el enrutador principal en forma de Tabs (pestañas). Se usa como contenedor raíz 
- * en App(). Esta configuración asegura que la barra de botones inferior siempre 
- * dibuje por encima de cualquier pantalla que se enrute en ActionTab o MenuTab.
- */
-
-function MainTabs() {
+function MainTabs({ onLogout }) {
   return (
     <Tab.Navigator
-      initialRouteName="ActionTab"
+      initialRouteName="HomeTab"
       screenOptions={{
+        headerShown: false,
         tabBarShowLabel: true,
         tabBarStyle: {
           backgroundColor: 'rgb(250, 249, 246)',
@@ -171,102 +79,101 @@ function MainTabs() {
         },
         tabBarActiveTintColor: 'rgb(232, 17, 35)',
         tabBarInactiveTintColor: 'rgb(181, 181, 181)',
+        tabBarItemStyle: {
+          paddingVertical: 5,
+        },
       }}
     >
       <Tab.Screen 
-        name="MessagesTab" 
-        component={DummyScreen} 
-        options={{
-          tabBarLabel: 'Messages',
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="chatbubbles" color={color} size={28} />
-          ),
-        }}
-      />
-      <Tab.Screen 
         name="MenuTab" 
-        component={DummyScreen} 
+        component={MenuScreen}
         options={{
-          tabBarLabel: 'Menu',
-          headerShown: false,
+          tabBarLabel: 'Menú',
           tabBarIcon: ({ color }) => (
-            <Ionicons name="grid" color={color} size={28} />
+            <Ionicons name="grid" color={color} size={26} />
           ),
         }}
       />
       
-      {/* 
-        El ActionTab envuelve todo el MainStack.
-        Ese botón central sirve como puerta de entrada a todas las pantallas, 
-        pero debido a que está encapsulado, conserva la barra activa.
-      */}
-
       <Tab.Screen 
-        name="ActionTab" 
-        component={MainStack} 
+        name="HomeTab" 
         options={{
           tabBarLabel: '',
-          headerShown: false,
           tabBarIcon: () => (
-            <Ionicons name="home" color="rgba(255, 255, 255, 1)" size={32} />
+            <Ionicons name="home" color="rgba(255, 255, 255, 1)" size={30} />
           ),
           tabBarButton: (props) => (
             <CustomTabButton {...props} />
-          )
-        }}
-      />
-      <Tab.Screen 
-        name="SettingsTab" 
-        component={DummyScreen} 
-        options={{
-          tabBarLabel: 'Settings',
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="settings" color={color} size={28} />
           ),
         }}
-      />
+      >
+        {() => <HomeScreen />}
+      </Tab.Screen>
+      
       <Tab.Screen 
-        name="LoginTab" 
-        component={AuthStack} 
+        name="ProfileTab" 
         options={{
-          tabBarLabel: 'Login',
-          headerShown: false,
+          tabBarLabel: 'Perfil',
           tabBarIcon: ({ color }) => (
-            <Ionicons name="person" color={color} size={28} />
+            <Ionicons name="person" color={color} size={26} />
           ),
         }}
-      />
+      >
+        {() => <ProfileScreen onLogout={onLogout} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
 
-/**
- * Componente principal de la app.
- * A diferencia de antes, ahora usa MainTabs como el contenedor raíz, en lugar de un Stack.
- */
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
   return (
     <NavigationContainer>
-      <MainTabs />
+      {isLoggedIn ? (
+        <MainTabs onLogout={handleLogout} />
+      ) : (
+        <LoginStack onLoginSuccess={handleLoginSuccess} />
+      )}
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'rgb(255, 255, 255)',
-    padding: 20,
+  customTabButton: {
+    top: -15,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: 'rgba(0, 0, 0, 1)',
-    textAlign: 'center',
+  customTabButtonInner: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgb(232, 17, 35)',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dummyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  dummyText: {
+    fontSize: 18,
+    color: '#9ca3af',
   },
 });

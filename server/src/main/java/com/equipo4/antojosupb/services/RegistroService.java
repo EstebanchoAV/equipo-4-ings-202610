@@ -1,5 +1,6 @@
 package com.equipo4.antojosupb.services;
 
+import com.equipo4.antojosupb.dto.LoginResponse;
 import com.equipo4.antojosupb.dto.RegistroRequest;
 import com.equipo4.antojosupb.entities.*;
 import com.equipo4.antojosupb.repository.*;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.regex.Pattern;
+import java.util.Optional;
 
 import java.time.LocalDateTime;
 
@@ -31,6 +33,9 @@ public class RegistroService {
 
     @Autowired
     private CategoriaVendedorRepository categoriaVendedorRepository;
+
+    @Autowired
+    private PasswordService passwordService;
 
     @Transactional
     public String registrarCliente(RegistroRequest request) {
@@ -83,8 +88,8 @@ public class RegistroService {
         // 1. Registrar Usuario General
         Usuario usuario = new Usuario();
         usuario.setEmail(request.getEmail());
-        usuario.setContrasena(request.getContrasena()); // TODO: En el futuro se debe encriptar la contraseña
-        usuario.setTelefono(request.getTelefono()); // Añadir teléfono
+        usuario.setContrasena(passwordService.hash(request.getContrasena()));
+        usuario.setTelefono(request.getTelefono());
         usuario.setFechaRegis(LocalDateTime.now());
 
         // Rol 2 para Cliente
@@ -178,8 +183,8 @@ public class RegistroService {
         // 1. Registrar Usuario General
         Usuario usuario = new Usuario();
         usuario.setEmail(request.getEmail());
-        usuario.setContrasena(request.getContrasena()); 
-        usuario.setTelefono(request.getTelefono()); 
+        usuario.setContrasena(passwordService.hash(request.getContrasena()));
+        usuario.setTelefono(request.getTelefono());
         usuario.setFechaRegis(LocalDateTime.now());
 
         // Rol 1 para Vendedor
@@ -208,5 +213,51 @@ public class RegistroService {
 
         vendedorRepository.save(vendedor);
         return "Vendedor registrado con éxito.";
+    }
+
+    public LoginResponse login(String email, String contrasena) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("El email es obligatorio.");
+        }
+        if (contrasena == null || contrasena.trim().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria.");
+        }
+
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+        
+        if (usuarioOpt.isEmpty()) {
+            throw new IllegalArgumentException("El usuario no existe.");
+        }
+
+        Usuario usuario = usuarioOpt.get();
+
+        if (!passwordService.verify(contrasena, usuario.getContrasena())) {
+            throw new IllegalArgumentException("Contraseña incorrecta.");
+        }
+
+        String nombre = "";
+        int idRol = usuario.getRol().getIdRol();
+        
+        if (idRol == 1) {
+            Optional<Vendedor> vendedorOpt = vendedorRepository.findByUsuarioIdUser(usuario.getIdUser());
+            if (vendedorOpt.isPresent()) {
+                nombre = vendedorOpt.get().getNombreNegocio();
+            }
+        } else if (idRol == 2) {
+            Optional<Cliente> clienteOpt = clienteRepository.findByUsuarioIdUser(usuario.getIdUser());
+            if (clienteOpt.isPresent()) {
+                nombre = clienteOpt.get().getNombreClient();
+            }
+        }
+
+        LoginResponse response = new LoginResponse(
+            usuario.getIdUser(),
+            usuario.getEmail(),
+            nombre,
+            idRol,
+            usuario.getRol().getNombreRol()
+        );
+
+        return response;
     }
 }

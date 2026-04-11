@@ -8,7 +8,6 @@ import {
   Alert,
   Platform
 } from 'react-native';
-import BackButton from '../Components/BackButton';
 import ScreenLayout from '../Components/ScreenLayout';
 import BoxSha from '../Components/BoxSha';
 import { registerClient } from '../services/authService';
@@ -73,8 +72,6 @@ const ClientRegisterScreen = ({ navigation }) => {
 
   return (
     <ScreenLayout scrollStyle={styles.scrollContainer}>
-
-      <BackButton navigation={navigation} />
 
       <View style={styles.formContainer}>
 
