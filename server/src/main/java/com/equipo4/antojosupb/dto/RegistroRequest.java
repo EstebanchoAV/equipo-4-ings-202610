@@ -1,0 +1,20 @@
+package com.equipo4.antojosupb.dto;
+
+import lombok.Data;
+
+@Data
+public class RegistroRequest {
+    private String email;
+    private String contrasena;
+    private String telefono; 
+    
+    // For Cliente
+    private String nombreClient;
+    
+    // For Vendedor
+    private String nombreNegocio;
+    private String nombrePropietario;
+    private String descripcionNeg;
+    private String contactoVen;
+    private Integer idCategoriaV;
+}
