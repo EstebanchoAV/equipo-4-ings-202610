@@ -8,3 +8,11 @@
 > ### Estado del tablero
 ![Tablero backlog Semana 1 viernes 27 Marzo](./imagenes-sprint/Trello1.png)
 
+
+## Viernes 10 Abril
+
+> ### Diagrama burndown
+![Diagrama burndown Semana 2 viernes 10 Abril](./imagenes-sprint/BurndownS2.png)
+
+> ### Estado del tablero
+![Tablero backlog Semana 2 viernes 10 Abril](./imagenes-sprint/Trello2.png)
