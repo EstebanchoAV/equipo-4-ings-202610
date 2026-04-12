@@ -7,9 +7,12 @@ import {
   Alert,
   Platform
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import ScreenLayout from '../Components/ScreenLayout';
+import { ROL_VENDEDOR } from '../services/scheduleService';
 
-const ProfileScreen = ({ onLogout }) => {
+const ProfileScreen = ({ onLogout, user }) => {
+  const navigation = useNavigation();
   const showAlert = (title, message, onOk) => {
     if (Platform.OS === 'web') {
       alert(`${title}: ${message}`);
@@ -29,11 +32,30 @@ const ProfileScreen = ({ onLogout }) => {
     );
   };
 
+  const esVendedor = Number(user?.idRol) === ROL_VENDEDOR;
+
   return (
     <ScreenLayout>
       <View style={styles.container}>
-        <Text style={styles.comingSoon}>Próximamente</Text>
-        
+        {user?.nombre ? (
+          <Text style={styles.greeting}>Hola, {user.nombre}</Text>
+        ) : null}
+        {user?.email ? (
+          <Text style={styles.emailLine}>{user.email}</Text>
+        ) : null}
+
+        {esVendedor ? (
+          <TouchableOpacity
+            style={styles.scheduleButton}
+            onPress={() => navigation.navigate('VendorSchedule')}
+          >
+            <Text style={styles.scheduleButtonText}>Horario de disponibilidad</Text>
+            <Text style={styles.scheduleSub}>Configura tu semana de atención</Text>
+          </TouchableOpacity>
+        ) : (
+          <Text style={styles.comingSoon}>Próximamente</Text>
+        )}
+
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
@@ -48,6 +70,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+  },
+  greeting: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  emailLine: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  scheduleButton: {
+    width: '100%',
+    maxWidth: 340,
+    backgroundColor: '#ecfdf5',
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#a7f3d0',
+  },
+  scheduleButtonText: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#064e3b',
+  },
+  scheduleSub: {
+    fontSize: 13,
+    color: '#047857',
+    marginTop: 4,
   },
   comingSoon: {
     fontSize: 18,

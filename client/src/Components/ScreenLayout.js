@@ -35,7 +35,8 @@ const ScreenLayout = ({ children, scrollStyle, containerStyle }) => {
             scrollStyle
           ]}
           showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled" 
+          keyboardShouldPersistTaps="always"
+          nestedScrollEnabled
         >
           {children}
         </ScrollView>

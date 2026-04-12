@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import BoxSha from '../Components/BoxSha';
+import ModalSelectField from '../Components/ModalSelectField';
 import ScreenLayout from '../Components/ScreenLayout';
 import { registerVendor } from '../services/authService';
 import { validateVendorDetailsForm } from '../utils/validators';
@@ -18,6 +18,11 @@ const VendorDetailsScreen = ({ route, navigation }) => {
         { id: 2, nombre: 'Postres / Dulces' },
         { id: 3, nombre: 'Bebidas' },
     ]);
+
+    const categoryOptions = useMemo(
+        () => categories.map((c) => ({ value: c.id, label: c.nombre })),
+        [categories]
+    );
 
     const showAlert = (title, message, onOk) => {
 
@@ -88,20 +93,16 @@ const VendorDetailsScreen = ({ route, navigation }) => {
                         onChangeText={setDescription}
                     />
 
-                    <Text style={styles.label}>Categoría del negocio</Text>
-                    <View style={styles.pickerWrapper}>
-                        <Picker
-
-                            selectedValue={categoryId}
-                            onValueChange={(itemValue) => setCategoryId(itemValue)}
-                            style={styles.picker}
-                            mode="dropdown"
-                        >
-                            <Picker.Item label="Selecciona una categoría..." value="" color="#9ca3af" />
-                            {categories.map((cat) => (
-                                <Picker.Item key={cat.id} label={cat.nombre} value={cat.id} />
-                            ))}
-                        </Picker>
+                    <View style={styles.selectBlock}>
+                        <ModalSelectField
+                            title="Categoría del negocio"
+                            placeholder="Selecciona una categoría..."
+                            hintText="Toca para elegir categoría"
+                            value={categoryId}
+                            onSelect={setCategoryId}
+                            options={categoryOptions}
+                            marginBottom={false}
+                        />
                     </View>
 
                     <Text style={styles.label}>Contacto</Text>
@@ -177,26 +178,8 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 1,
     },
-    pickerWrapper: {
-        backgroundColor: '#ffffff',
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-        marginBottom: 16,
-        overflow: 'hidden',
-        shadowColor: 'rgba(0, 0, 0, 0.05)',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 1,
-        shadowRadius: 2,
-        elevation: 1,
-    },
-    picker: {
-        height: 50,
-        width: '100%',
-        borderWidth: 0,
-        outlineStyle: 'none',
-        backgroundColor: 'transparent',
-        paddingHorizontal: 10,
+    selectBlock: {
+        marginBottom: 13,
     },
     registerButton: {
         backgroundColor: '#064e3b', // green for vendors

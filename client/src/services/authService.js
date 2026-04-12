@@ -3,7 +3,8 @@
  * NOTA: En ambiente local (emuladores u otros dispositivos en red), debes cambiar 
  * 'localhost' por la dirección IP de tu máquina (ej. http://192.168.x.x:8080/...).
  */
-const API_URL = 'http://192.168.1.122:8080/api/auth';
+export const API_URL = 'http://localhost:8080/api/auth';
+
 
 /**
  * Consume el endpoint /registro/cliente para crear una cuenta de Cliente.
