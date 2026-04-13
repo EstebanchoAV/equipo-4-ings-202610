@@ -16,7 +16,7 @@ const CATEGORIES = [
   { id: 2, name: 'PIZZAS', icon: 'pizza', bg: '#FEF6D8', iconColor: '#F0A500' },
   { id: 3, name: 'PANES', icon: 'cafe', bg: '#FDE8E8', iconColor: '#C0392B' },
   { id: 4, name: 'POSTRES', icon: 'ice-cream', bg: '#FEF6D8', iconColor: '#F0A500' },
-  { id: 5, name: 'CAFÉ', icon: 'coffee', bg: '#F8C8C8', iconColor: '#C0392B', active: true },
+  { id: 5, name: 'CAFÉ', icon: 'cafe', bg: '#F8C8C8', iconColor: '#C0392B', active: true },
   { id: 6, name: 'SALUDABLE', icon: 'leaf', bg: '#FEF6D8', iconColor: '#F0A500' },
 ];
 

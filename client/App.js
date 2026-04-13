@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -11,9 +11,12 @@ import VendorRegisterScreen from './src/screens/VendorRegisterScreen';
 import VendorDetailsScreen from './src/screens/VendorDetailsScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import VendorScheduleScreen from './src/screens/VendorScheduleScreen';
+import { loadSession, saveSession, clearSession } from './src/services/sessionStorage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const RootStack = createNativeStackNavigator();
 
 const CustomTabButton = ({ children, onPress }) => (
   <TouchableOpacity
@@ -59,7 +62,7 @@ function LoginStack({ onLoginSuccess }) {
   );
 }
 
-function MainTabs({ onLogout }) {
+function MainTabs({ onLogout, user }) {
   return (
     <Tab.Navigator
       initialRouteName="HomeTab"
@@ -119,27 +122,92 @@ function MainTabs({ onLogout }) {
           ),
         }}
       >
-        {() => <ProfileScreen onLogout={onLogout} />}
+        {() => <ProfileScreen onLogout={onLogout} user={user} />}
       </Tab.Screen>
     </Tab.Navigator>
   );
 }
 
+function LoggedInStack({ user, onLogout }) {
+  return (
+    <RootStack.Navigator>
+      <RootStack.Screen name="MainTabs" options={{ headerShown: false }}>
+        {() => <MainTabs onLogout={onLogout} user={user} />}
+      </RootStack.Screen>
+      <RootStack.Screen
+        name="VendorSchedule"
+        options={{ headerShown: false }}
+      >
+        {() => <VendorScheduleScreen user={user} />}
+      </RootStack.Screen>
+    </RootStack.Navigator>
+  );
+}
+
+function isRestorableUser(data) {
+  return (
+    data != null &&
+    typeof data === 'object' &&
+    data.idUser != null &&
+    data.idRol != null
+  );
+}
+
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [sessionReady, setSessionReady] = useState(false);
 
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
-  };
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const stored = await loadSession();
+        if (!cancelled && isRestorableUser(stored)) {
+          setUser(stored);
+        }
+      } catch (e) {
+        console.warn('No se pudo restaurar la sesión:', e);
+      } finally {
+        if (!cancelled) {
+          setSessionReady(true);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+  const handleLoginSuccess = useCallback(async (userData) => {
+    setUser(userData);
+    try {
+      await saveSession(userData);
+    } catch (e) {
+      console.warn('No se pudo guardar la sesión en el dispositivo:', e);
+    }
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await clearSession();
+    } catch (e) {
+      console.warn('No se pudo borrar la sesión local:', e);
+    }
+    setUser(null);
+  }, []);
+
+  if (!sessionReady) {
+    return (
+      <View style={styles.bootContainer}>
+        <ActivityIndicator size="large" color="#e81123" />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? (
-        <MainTabs onLogout={handleLogout} />
+      {user ? (
+        <LoggedInStack user={user} onLogout={handleLogout} />
       ) : (
         <LoginStack onLoginSuccess={handleLoginSuccess} />
       )}
@@ -148,6 +216,12 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  bootContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f7f7fa',
+  },
   customTabButton: {
     top: -15,
     justifyContent: 'center',

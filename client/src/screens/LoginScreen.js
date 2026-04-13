@@ -43,10 +43,10 @@ const LoginScreen = ({ onLoginSuccess }) => {
     try {
       const userData = await login(e, p);
       console.log('Login exitoso:', userData);
-      
+
       setEmail('');
       setPassword('');
-      onLoginSuccess();
+      onLoginSuccess(userData);
     } catch (error) {
       console.error('Error de login:', error);
       const message = error.message === "Failed to fetch" || error.message.includes("Network Error")
