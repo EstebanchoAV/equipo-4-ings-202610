@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import ScreenLayout from '../Components/ScreenLayout';
 import BoxSha from '../Components/BoxSha';
+import BackButton from '../Components/BackButton';
 import { registerClient } from '../services/authService';
 import { validateClientForm } from '../utils/validators';
 
@@ -71,7 +72,8 @@ const ClientRegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <ScreenLayout scrollStyle={styles.scrollContainer}>
+    <ScreenLayout scrollStyle={styles.scroll}>
+      <BackButton navigation={navigation} />
 
       <View style={styles.formContainer}>
 
@@ -147,9 +149,10 @@ const ClientRegisterScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
+  scroll: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    paddingBottom: 32,
   },
   formContainer: {
     flex: 1,

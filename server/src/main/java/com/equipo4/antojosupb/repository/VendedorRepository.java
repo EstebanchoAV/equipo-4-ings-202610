@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface VendedorRepository extends JpaRepository<Vendedor, Integer> {
     boolean existsByNombreNegocio(String nombreNegocio);
     Optional<Vendedor> findByUsuarioIdUser(int idUser);
+    java.util.List<Vendedor> findAllByOrderByNombreNegocioAsc();
 }

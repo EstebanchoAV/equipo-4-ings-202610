@@ -176,7 +176,12 @@ public class RegistroService {
         }
 
         // Validación del contacto del vendedor: no nulo, no vacío
-        if (request.getContactoVen() == null || request.getContactoVen().trim().isEmpty()) {
+        if (request.getWhatsAppLink() == null || request.getWhatsAppLink().trim().isEmpty()) {
+            throw new IllegalArgumentException("El contacto del vendedor es obligatorio.");
+        }
+
+        // Validación del contacto del vendedor: no nulo, no vacío
+        if (request.getInstagramLink() == null || request.getInstagramLink().trim().isEmpty()) {
             throw new IllegalArgumentException("El contacto del vendedor es obligatorio.");
         }
 
@@ -200,8 +205,10 @@ public class RegistroService {
         vendedor.setNombreNegocio(request.getNombreNegocio());
         vendedor.setNombrePropietario(request.getNombrePropietario());
         vendedor.setDescripcionNeg(request.getDescripcionNeg());
-        vendedor.setContactoVen(request.getContactoVen());
+        vendedor.setWhatsAppLink(request.getWhatsAppLink());
+        vendedor.setInstagramLink(request.getInstagramLink());
         vendedor.setUsuario(usuarioGuardado);
+        vendedor.setActivo(false);
 
         if (request.getIdCategoriaV() != null) {
             CategoriaVendedor categoria = categoriaVendedorRepository.findById(request.getIdCategoriaV())

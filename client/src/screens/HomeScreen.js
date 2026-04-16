@@ -78,7 +78,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <ScreenLayout>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      
         <View style={styles.container}>
           <View style={styles.header}>
             <View style={styles.logoContainer}>
@@ -136,7 +136,7 @@ const HomeScreen = ({ navigation }) => {
 
           <View style={styles.bottomPadding} />
         </View>
-      </ScrollView>
+      
     </ScreenLayout>
   );
 };

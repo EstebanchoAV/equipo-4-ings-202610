@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import BoxSha from '../Components/BoxSha';
 import ScreenLayout from '../Components/ScreenLayout';
+import BackButton from '../Components/BackButton';
 import { validateVendorBasicForm } from '../utils/validators';
 
 const VendorRegisterScreen = ({ navigation }) => {
@@ -43,7 +44,8 @@ const VendorRegisterScreen = ({ navigation }) => {
 
   return (
 
-    <ScreenLayout scrollStyle={styles.scrollContainer}>
+    <ScreenLayout scrollStyle={styles.scroll}>
+      <BackButton navigation={navigation} />
 
       <View style={styles.formContainer}>
 
@@ -126,9 +128,10 @@ const VendorRegisterScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
+  scroll: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    paddingBottom: 32,
   },
   formContainer: {
     flex: 1,

@@ -4,11 +4,9 @@ import com.equipo4.antojosupb.dto.HorarioDiaRequest;
 import com.equipo4.antojosupb.dto.HorarioDiaResponse;
 import com.equipo4.antojosupb.entities.DiasSemana;
 import com.equipo4.antojosupb.entities.HorariosV;
-import com.equipo4.antojosupb.entities.Usuario;
 import com.equipo4.antojosupb.entities.Vendedor;
 import com.equipo4.antojosupb.repository.DiasSemanaRepository;
 import com.equipo4.antojosupb.repository.HorariosVRepository;
-import com.equipo4.antojosupb.repository.UsuarioRepository;
 import com.equipo4.antojosupb.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -28,16 +27,16 @@ public class HorarioVendedorService {
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private VendedorRepository vendedorRepository;
+    private VendedorAccesoService vendedorAccesoService;
 
     @Autowired
     private DiasSemanaRepository diasSemanaRepository;
 
     @Autowired
     private HorariosVRepository horariosVRepository;
+
+    @Autowired
+    private VendedorRepository vendedorRepository;
 
     public List<HorarioDiaResponse> obtenerHorarioSemanal(int idUser) {
         Vendedor vendedor = resolverVendedor(idUser);
@@ -121,12 +120,36 @@ public class HorarioVendedorService {
     }
 
     private Vendedor resolverVendedor(int idUser) {
-        Usuario usuario = usuarioRepository.findById(idUser)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
-        if (usuario.getRol().getIdRol() != 1) {
-            throw new IllegalArgumentException("Solo los vendedores pueden gestionar el horario de disponibilidad.");
+        return vendedorAccesoService.requerirVendedor(idUser,
+                "Solo los vendedores pueden gestionar el horario de disponibilidad.");
+    }
+
+    @Transactional
+    public boolean actualizarEstadoPorHorario(Vendedor vendedor) {
+        boolean disponible = calcularDisponibilidad(vendedor, LocalDateTime.now());
+        if (vendedor.isActivo() != disponible) {
+            vendedor.setActivo(disponible);
+            vendedorRepository.save(vendedor);
         }
-        return vendedorRepository.findByUsuarioIdUser(idUser)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el perfil de vendedor."));
+        return disponible;
+    }
+
+    private boolean calcularDisponibilidad(Vendedor vendedor, LocalDateTime ahora) {
+        int idDiaActual = ahora.getDayOfWeek().getValue();
+        LocalTime horaActual = ahora.toLocalTime();
+
+        List<HorariosV> horariosDia = horariosVRepository.findByVendedor_IdVendedor(vendedor.getIdVendedor())
+                .stream()
+                .filter(h -> h.getDia().getIdDia() == idDiaActual)
+                .collect(Collectors.toList());
+
+        for (HorariosV horario : horariosDia) {
+            boolean inicia = !horaActual.isBefore(horario.getHoraInicio());
+            boolean termina = !horaActual.isAfter(horario.getHoraFin());
+            if (inicia && termina) {
+                return true;
+            }
+        }
+        return false;
     }
 }

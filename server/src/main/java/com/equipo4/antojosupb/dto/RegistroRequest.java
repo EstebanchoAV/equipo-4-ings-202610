@@ -15,6 +15,7 @@ public class RegistroRequest {
     private String nombreNegocio;
     private String nombrePropietario;
     private String descripcionNeg;
-    private String contactoVen;
+    private String whatsAppLink;
+    private String instagramLink;
     private Integer idCategoriaV;
 }
