@@ -52,7 +52,7 @@ const CategoryCard = ({ category }) => (
   </View>
 );
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen_Client = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,73 +88,73 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <ScreenLayout>
-      
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <View style={styles.logoIcon}>
-                <Ionicons name="restaurant" size={20} color="#fff" />
-              </View>
-              <Text style={styles.logoText}>Antojos</Text>
+
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <View style={styles.logoIcon}>
+              <Ionicons name="restaurant" size={20} color="#fff" />
             </View>
-            <TouchableOpacity style={styles.profileButton}>
-              <View style={styles.profileIcon}>
-                <Ionicons name="person" size={22} color="#9ca3af" />
-              </View>
-            </TouchableOpacity>
+            <Text style={styles.logoText}>Antojos</Text>
           </View>
-
-          <View style={styles.searchContainer}>
-            <View style={styles.searchBar}>
-              <Ionicons name="search" size={20} color="#9ca3af" style={styles.searchIcon} />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="¿Cuál es tu antojo hoy?"
-                placeholderTextColor="#9ca3af"
-                value={searchText}
-                onChangeText={setSearchText}
-              />
+          <TouchableOpacity style={styles.profileButton}>
+            <View style={styles.profileIcon}>
+              <Ionicons name="person" size={22} color="#9ca3af" />
             </View>
-          </View>
-
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>
-              {searchText.trim() === '' ? 'Recomendados para ti' : 'Resultados de búsqueda'}
-            </Text>
-            <View style={styles.accentLine} />
-          </View>
-
-          <View style={styles.vendorList}>
-            {loading ? (
-              <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>Cargando antojos...</Text>
-            ) : vendors.length === 0 ? (
-              <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>No se encontraron negocios</Text>
-            ) : (
-              vendors.map((vendor) => (
-                <VendorCard
-                  key={vendor.idVendedor}
-                  vendor={vendor}
-                  onPress={() => navigation.navigate('VendorDetails', { vendor })}
-                />
-              ))
-            )}
-          </View>
-
-          <TouchableOpacity style={styles.viewMoreButton}>
-            <Text style={styles.viewMoreText}>Ver más antojos</Text>
           </TouchableOpacity>
-
-          <Text style={styles.categoriesTitle}>Categorías</Text>
-
-          <View style={styles.categoriesGrid}>
-            {CATEGORIES.map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </View>
-
-          <View style={styles.bottomPadding} />
         </View>
-      
+
+        <View style={styles.searchContainer}>
+          <View style={styles.searchBar}>
+            <Ionicons name="search" size={20} color="#9ca3af" style={styles.searchIcon} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="¿Cuál es tu antojo hoy?"
+              placeholderTextColor="#9ca3af"
+              value={searchText}
+              onChangeText={setSearchText}
+            />
+          </View>
+        </View>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>
+            {searchText.trim() === '' ? 'Recomendados para ti' : 'Resultados de búsqueda'}
+          </Text>
+          <View style={styles.accentLine} />
+        </View>
+
+        <View style={styles.vendorList}>
+          {loading ? (
+            <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>Cargando antojos...</Text>
+          ) : vendors.length === 0 ? (
+            <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>No se encontraron negocios</Text>
+          ) : (
+            vendors.map((vendor) => (
+              <VendorCard
+                key={vendor.idVendedor}
+                vendor={vendor}
+                onPress={() => navigation.navigate('BusinessDetail', { vendor })}
+              />
+            ))
+          )}
+        </View>
+
+        <TouchableOpacity style={styles.viewMoreButton}>
+          <Text style={styles.viewMoreText}>Ver más antojos</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.categoriesTitle}>Categorías</Text>
+
+        <View style={styles.categoriesGrid}>
+          {CATEGORIES.map((category) => (
+            <CategoryCard key={category.id} category={category} />
+          ))}
+        </View>
+
+        <View style={styles.bottomPadding} />
+      </View>
+
     </ScreenLayout>
   );
 };
@@ -323,4 +323,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default HomeScreen_Client;

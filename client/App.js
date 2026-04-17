@@ -9,7 +9,9 @@ import LoginScreen from './src/screens/LoginScreen';
 import ClientRegisterScreen from './src/screens/ClientRegisterScreen';
 import VendorRegisterScreen from './src/screens/VendorRegisterScreen';
 import VendorFinishRegisterScreen from './src/screens/VendorFinishRegisterScreen';
-import HomeScreen from './src/screens/HomeScreen';
+import HomeScreen_Client from './src/screens/HomeScreen_Client';
+import HomeScreen_Vendor from './src/screens/HomeScreen_Vendor';
+import Business_DetailScreen from './src/screens/Business_DetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import VendorScheduleScreen from './src/screens/VendorScheduleScreen';
 import EditContactScreen from './src/screens/EditContactScreen';
@@ -99,7 +101,6 @@ function MainTabs({ onLogout, user }) {
           ),
         }}
       />
-      
       <Tab.Screen 
         name="HomeTab" 
         options={{
@@ -112,7 +113,7 @@ function MainTabs({ onLogout, user }) {
           ),
         }}
       >
-        {() => <HomeScreen />}
+        {({ navigation }) => user.idRol === 1 ? <HomeScreen_Vendor user={user} /> : <HomeScreen_Client navigation={navigation} />}
       </Tab.Screen>
       
       <Tab.Screen 
@@ -154,6 +155,11 @@ function LoggedInStack({ user, onLogout }) {
       >
         {() => <EditBusinessScreen user={user} />}
       </RootStack.Screen>
+      <RootStack.Screen
+        name="BusinessDetail"
+        component={Business_DetailScreen}
+        options={{ headerShown: false }}
+      />
     </RootStack.Navigator>
   );
 }
