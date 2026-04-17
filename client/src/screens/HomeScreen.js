@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenLayout from '../Components/ScreenLayout';
+import { getRecomendados, buscarVendedores } from '../services/vendorService';
 
 const CATEGORIES = [
   { id: 1, name: 'BURGERS', icon: 'fast-food', bg: '#FDE8E8', iconColor: '#C0392B' },
@@ -20,40 +21,18 @@ const CATEGORIES = [
   { id: 6, name: 'SALUDABLE', icon: 'leaf', bg: '#FEF6D8', iconColor: '#F0A500' },
 ];
 
-const VENDORS = [
-  {
-    id: 1,
-    name: 'Don Julio',
-    category: 'Parrilla',
-    schedule: '12:00 a 23:00',
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&h=200&fit=crop',
-  },
-  {
-    id: 2,
-    name: 'La Mezzetta',
-    category: 'Pizza',
-    schedule: '11:00 a 00:00',
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop',
-  },
-  {
-    id: 3,
-    name: 'Sarkis',
-    category: 'Armenia',
-    schedule: '12:00 a 15:00',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&h=200&fit=crop',
-  },
-];
+// Datos reales suministrados por el backend
 
 const VendorCard = ({ vendor, onPress }) => (
   <TouchableOpacity style={styles.vendorCard} onPress={onPress}>
     <Image
-      source={{ uri: vendor.image }}
+      source={{ uri: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&h=200&fit=crop' }}
       style={styles.vendorImage}
     />
     <View style={styles.vendorInfo}>
-      <Text style={styles.vendorName}>{vendor.name}</Text>
+      <Text style={styles.vendorName}>{vendor.nombreNegocio}</Text>
       <Text style={styles.vendorDetails}>
-        {vendor.category} • {vendor.schedule}
+        {vendor.nombreCategoria || 'Sin categoría'} • {vendor.estado}
       </Text>
     </View>
     <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
@@ -74,7 +53,38 @@ const CategoryCard = ({ category }) => (
 );
 
 const HomeScreen = ({ navigation }) => {
-  const [searchText, setSearchText] = React.useState('');
+  const [searchText, setSearchText] = useState('');
+  const [vendors, setVendors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const fetchVendors = async () => {
+      setLoading(true);
+      try {
+        if (searchText.trim() === '') {
+          const list = await getRecomendados();
+          if (active) setVendors(list);
+        } else {
+          const list = await buscarVendedores(searchText);
+          if (active) setVendors(list);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      fetchVendors();
+    }, 400);
+
+    return () => {
+      active = false;
+      clearTimeout(timeoutId);
+    };
+  }, [searchText]);
 
   return (
     <ScreenLayout>
@@ -108,18 +118,26 @@ const HomeScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recomendados para ti</Text>
+            <Text style={styles.sectionTitle}>
+              {searchText.trim() === '' ? 'Recomendados para ti' : 'Resultados de búsqueda'}
+            </Text>
             <View style={styles.accentLine} />
           </View>
 
           <View style={styles.vendorList}>
-            {VENDORS.map((vendor) => (
-              <VendorCard
-                key={vendor.id}
-                vendor={vendor}
-                onPress={() => navigation.navigate('VendorDetails', { vendor })}
-              />
-            ))}
+            {loading ? (
+              <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>Cargando antojos...</Text>
+            ) : vendors.length === 0 ? (
+              <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>No se encontraron negocios</Text>
+            ) : (
+              vendors.map((vendor) => (
+                <VendorCard
+                  key={vendor.idVendedor}
+                  vendor={vendor}
+                  onPress={() => navigation.navigate('VendorDetails', { vendor })}
+                />
+              ))
+            )}
           </View>
 
           <TouchableOpacity style={styles.viewMoreButton}>

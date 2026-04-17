@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +39,32 @@ public class VendedoresPublicosService {
                 vendedor.getCategoriaVendedor() != null ? vendedor.getCategoriaVendedor().getNombreCategoria() : null,
                 activo,
                 activo ? "Abierto" : "Cerrado",
-                activo ? "blanco-hueso" : "gris");
+                activo ? "blanco-hueso" : "gris",
+                vendedor.getWhatsAppLink(),
+                vendedor.getDescripcionNeg());
+    }
+
+    @Transactional
+    public List<VendedorEstadoResponse> listarRecomendados(int cantidad) {
+        List<Vendedor> vendedores = vendedorRepository.findAll();
+        Collections.shuffle(vendedores);
+        return vendedores.stream()
+                .limit(cantidad)
+                .map(vendedor -> {
+                    boolean activo = horarioVendedorService.actualizarEstadoPorHorario(vendedor);
+                    return toResponse(vendedor, activo);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<VendedorEstadoResponse> buscarVendedoresPorNombre(String nombre) {
+        List<Vendedor> vendedores = vendedorRepository.findByNombreNegocioContainingIgnoreCase(nombre);
+        return vendedores.stream()
+                .map(vendedor -> {
+                    boolean activo = horarioVendedorService.actualizarEstadoPorHorario(vendedor);
+                    return toResponse(vendedor, activo);
+                })
+                .collect(Collectors.toList());
     }
 }

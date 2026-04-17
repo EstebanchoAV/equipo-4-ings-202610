@@ -14,4 +14,6 @@ public class VendedorEstadoResponse {
     private boolean activo;
     private String estado;
     private String colorTarjeta;
+    private String whatsAppLink;
+    private String descripcionNeg;
 }

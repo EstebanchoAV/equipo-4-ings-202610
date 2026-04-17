@@ -23,4 +23,15 @@ public class VendedoresController {
     public ResponseEntity<List<VendedorEstadoResponse>> listarVendedores() {
         return ResponseEntity.ok(vendedoresPublicosService.listarVendedores());
     }
+
+    @GetMapping("/recomendados")
+    public ResponseEntity<List<VendedorEstadoResponse>> listarRecomendados() {
+        // Enviar por defecto 3 recomendados
+        return ResponseEntity.ok(vendedoresPublicosService.listarRecomendados(3));
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<VendedorEstadoResponse>> buscarVendedores(@org.springframework.web.bind.annotation.RequestParam String nombre) {
+        return ResponseEntity.ok(vendedoresPublicosService.buscarVendedoresPorNombre(nombre));
+    }
 }

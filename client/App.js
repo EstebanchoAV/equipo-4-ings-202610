@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import LoginScreen from './src/screens/LoginScreen';
 import ClientRegisterScreen from './src/screens/ClientRegisterScreen';
 import VendorRegisterScreen from './src/screens/VendorRegisterScreen';
-import VendorDetailsScreen from './src/screens/VendorDetailsScreen';
+import VendorFinishRegisterScreen from './src/screens/VendorFinishRegisterScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import VendorScheduleScreen from './src/screens/VendorScheduleScreen';
@@ -57,7 +57,7 @@ function LoginStack({ onLoginSuccess }) {
       />
       <Stack.Screen 
         name="VendorDetails" 
-        component={VendorDetailsScreen}
+        component={VendorFinishRegisterScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
