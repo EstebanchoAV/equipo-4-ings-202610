@@ -97,11 +97,7 @@ const HomeScreen_Client = ({ navigation }) => {
             </View>
             <Text style={styles.logoText}>Antojos</Text>
           </View>
-          <TouchableOpacity style={styles.profileButton}>
-            <View style={styles.profileIcon}>
-              <Ionicons name="person" size={22} color="#9ca3af" />
-            </View>
-          </TouchableOpacity>
+          {/* Botón de perfil removido */}
         </View>
 
         <View style={styles.searchContainer}>
@@ -169,7 +165,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   logoContainer: {
     flexDirection: 'row',
