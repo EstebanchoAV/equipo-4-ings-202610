@@ -25,8 +25,11 @@ public class Vendedor {
     @Column(name = "DescripcionNeg", columnDefinition = "NVARCHAR(MAX)")
     private String descripcionNeg;
 
-    @Column(name = "ContactoVen", nullable = false, length = 120)
-    private String contactoVen;
+    @Column(name = "WhatsAppLink", nullable = false, length = 120)
+    private String whatsAppLink;
+
+    @Column(name = "InstagramLink", length = 120)
+    private String instagramLink;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IdCategoriaV", nullable = false)
@@ -35,4 +38,7 @@ public class Vendedor {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IdUser", nullable = false)
     private Usuario usuario;
+
+    @Column(name = "Activo", nullable = false)
+    private boolean activo;
 }

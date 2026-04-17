@@ -1,9 +1,11 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
+import React, { useState, useMemo, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, ActivityIndicator } from 'react-native';
 import BoxSha from '../Components/BoxSha';
 import ModalSelectField from '../Components/ModalSelectField';
 import ScreenLayout from '../Components/ScreenLayout';
+import BackButton from '../Components/BackButton';
 import { registerVendor } from '../services/authService';
+import { getCategorias } from '../services/profileService';
 import { validateVendorDetailsForm } from '../utils/validators';
 
 const VendorDetailsScreen = ({ route, navigation }) => {
@@ -11,16 +13,28 @@ const VendorDetailsScreen = ({ route, navigation }) => {
 
     const [description, setDescription] = useState('');
     const [whatsappLink, setWhatsappLink] = useState('');
+    const [instagramLink, setInstagramLink] = useState('');
     const [categoryId, setCategoryId] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [loadingCats, setLoadingCats] = useState(true);
 
-    const [categories] = useState([
-        { id: 1, nombre: 'Comida Rápida' },
-        { id: 2, nombre: 'Postres / Dulces' },
-        { id: 3, nombre: 'Bebidas' },
-    ]);
+    useEffect(() => {
+        fetchCats();
+    }, []);
+
+    const fetchCats = async () => {
+        try {
+            const data = await getCategorias();
+            setCategories(data);
+        } catch (error) {
+            console.error("Error al cargar categorías:", error);
+        } finally {
+            setLoadingCats(false);
+        }
+    };
 
     const categoryOptions = useMemo(
-        () => categories.map((c) => ({ value: c.id, label: c.nombre })),
+        () => categories.map((c) => ({ value: c.idCategoriaV, label: c.nombreCategoria })),
         [categories]
     );
 
@@ -38,8 +52,9 @@ const VendorDetailsScreen = ({ route, navigation }) => {
 
         const ds = description.trim();
         const wl = whatsappLink.trim();
+        const il = instagramLink.trim();
 
-        const errors = validateVendorDetailsForm(ds, categoryId, wl);
+        const errors = validateVendorDetailsForm(ds, categoryId, wl, il);
 
         if (errors.length > 0) {
             showAlert("Campos incorrectos", errors.join("\n"));
@@ -56,7 +71,8 @@ const VendorDetailsScreen = ({ route, navigation }) => {
                 telefono: initialData.t,
                 descripcionNeg: ds,
                 idCategoriaV: categoryId,
-                contactoVen: wl
+                whatsAppLink: wl,
+                instagramLink: il
             };
 
             await registerVendor(payload);
@@ -77,7 +93,7 @@ const VendorDetailsScreen = ({ route, navigation }) => {
 
     return (
         <ScreenLayout scrollStyle={styles.scrollContainer}>
-
+            <BackButton navigation={navigation} />
             <View style={styles.formContainer}>
 
                 <BoxSha>
@@ -94,24 +110,40 @@ const VendorDetailsScreen = ({ route, navigation }) => {
                     />
 
                     <View style={styles.selectBlock}>
-                        <ModalSelectField
-                            title="Categoría del negocio"
-                            placeholder="Selecciona una categoría..."
-                            hintText="Toca para elegir categoría"
-                            value={categoryId}
-                            onSelect={setCategoryId}
-                            options={categoryOptions}
-                            marginBottom={false}
-                        />
+                        {loadingCats ? (
+                            <ActivityIndicator size="small" color="#064e3b" />
+                        ) : (
+                            <ModalSelectField
+                                title="Categoría del negocio"
+                                placeholder="Selecciona una categoría..."
+                                hintText="Toca para elegir categoría"
+                                value={categoryId}
+                                onSelect={setCategoryId}
+                                options={categoryOptions}
+                                marginBottom={false}
+                            />
+                        )}
                     </View>
 
-                    <Text style={styles.label}>Contacto</Text>
+                    <Text style={styles.label}>WhatsApp Link *</Text>
                     <TextInput
                         style={styles.input}
                         placeholder="https://wa.me/57300..."
                         placeholderTextColor="#9ca3af"
                         value={whatsappLink}
                         onChangeText={setWhatsappLink}
+                        keyboardType="url"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                    />
+
+                    <Text style={styles.label}>Instagram Link</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="https://instagram.com/..."
+                        placeholderTextColor="#9ca3af"
+                        value={instagramLink}
+                        onChangeText={setInstagramLink}
                         keyboardType="url"
                         autoCapitalize="none"
                         autoCorrect={false}

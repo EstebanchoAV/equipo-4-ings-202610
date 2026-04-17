@@ -51,7 +51,7 @@ export const registerClient = async (clientData) => {
  * @param {string} vendorData.telefono - Número de teléfono.
  * @param {string} vendorData.descripcionNeg - Descripción de lo que se vende.
  * @param {string|number} vendorData.idCategoriaV - Identificador numérico de la categoría.
- * @param {string} vendorData.contactoVen - Link de whatsapp del vendedor.
+ * @param {string} vendorData.whatsAppLink - Link de whatsapp del vendedor.
  * @returns {Promise<string>} Mensaje del servidor indicando éxito.
  * @throws {Error} Excepción lanzada si el servidor no devuelve status OK (Ej. Email ya uso).
  */

@@ -21,22 +21,11 @@ import {
   saveVendorWeeklySchedule,
 } from '../services/scheduleService';
 
-/** Formato HH:mm esperado por el backend */
-function normalizeTime(s) {
-  if (s == null || !String(s).trim()) return '';
-  const parts = String(s).trim().split(':');
-  if (parts.length !== 2) return String(s).trim();
-  const h = parts[0].padStart(2, '0');
-  const m = parts[1].replace(/\D/g, '').slice(0, 2).padStart(2, '0');
-  return `${h}:${m}`;
-}
-
-function parseTimeToMinutes(t) {
-  const n = normalizeTime(t);
-  const [h, m] = n.split(':').map((x) => parseInt(x, 10));
-  if (Number.isNaN(h) || Number.isNaN(m)) return null;
-  return h * 60 + m;
-}
+import {
+  normalizeTime,
+  parseTimeToMinutes,
+  validateVendorSchedule,
+} from '../utils/validators';
 
 function minutesToStr(mins) {
   const h = Math.floor(mins / 60) % 24;
@@ -298,37 +287,15 @@ const VendorScheduleScreen = ({ user }) => {
     );
   };
 
-  const validateBeforeSave = () => {
-    for (const d of dias) {
-      if (!d.activo) continue;
-      const ini = normalizeTime(d.horaInicio);
-      const fin = normalizeTime(d.horaFin);
-      if (!ini || !fin) {
-        showAlert(
-          'Horario incompleto',
-          `En ${d.nombreDia} indica hora de inicio y fin (formato HH:mm).`
-        );
-        return false;
-      }
-      const a = parseTimeToMinutes(ini);
-      const b = parseTimeToMinutes(fin);
-      if (a === null || b === null) {
-        showAlert('Formato inválido', `Revisa las horas de ${d.nombreDia}.`);
-        return false;
-      }
-      if (b <= a) {
-        showAlert(
-          'Horario inválido',
-          `En ${d.nombreDia}, la hora de fin debe ser posterior a la de inicio.`
-        );
-        return false;
-      }
-    }
-    return true;
-  };
 
   const handleSave = async () => {
-    if (!user?.idUser || !validateBeforeSave()) return;
+    if (!user?.idUser) return;
+    const errorMsg = validateVendorSchedule(dias);
+    if (errorMsg) {
+      showAlert('Validación', errorMsg);
+      return;
+    }
+
     setSaving(true);
     try {
       const payload = dias.map((d) => ({

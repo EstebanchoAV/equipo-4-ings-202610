@@ -12,6 +12,8 @@ import VendorDetailsScreen from './src/screens/VendorDetailsScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import VendorScheduleScreen from './src/screens/VendorScheduleScreen';
+import EditContactScreen from './src/screens/EditContactScreen';
+import EditBusinessScreen from './src/screens/EditBusinessScreen';
 import { loadSession, saveSession, clearSession } from './src/services/sessionStorage';
 
 const Stack = createNativeStackNavigator();
@@ -46,17 +48,17 @@ function LoginStack({ onLoginSuccess }) {
       <Stack.Screen 
         name="ClientRegister" 
         component={ClientRegisterScreen}
-        options={{ title: 'Registro Cliente' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen 
         name="VendorRegister" 
         component={VendorRegisterScreen}
-        options={{ title: 'Registro Vendedor' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen 
         name="VendorDetails" 
         component={VendorDetailsScreen}
-        options={{ title: 'Detalles del Negocio' }}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -139,6 +141,18 @@ function LoggedInStack({ user, onLogout }) {
         options={{ headerShown: false }}
       >
         {() => <VendorScheduleScreen user={user} />}
+      </RootStack.Screen>
+      <RootStack.Screen
+        name="EditContact"
+        options={{ headerShown: false }}
+      >
+        {() => <EditContactScreen user={user} />}
+      </RootStack.Screen>
+      <RootStack.Screen
+        name="EditBusiness"
+        options={{ headerShown: false }}
+      >
+        {() => <EditBusinessScreen user={user} />}
       </RootStack.Screen>
     </RootStack.Navigator>
   );

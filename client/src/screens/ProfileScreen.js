@@ -45,16 +45,41 @@ const ProfileScreen = ({ onLogout, user }) => {
         ) : null}
 
         {esVendedor ? (
-          <TouchableOpacity
-            style={styles.scheduleButton}
-            onPress={() => navigation.navigate('VendorSchedule')}
-          >
-            <Text style={styles.scheduleButtonText}>Horario de disponibilidad</Text>
-            <Text style={styles.scheduleSub}>Configura tu semana de atención</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={() => navigation.navigate('EditBusiness')}
+            >
+              <Text style={styles.menuButtonText}>Identidad del negocio</Text>
+              <Text style={styles.menuSub}>Personaliza tu historia y nombre</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.scheduleButton}
+              onPress={() => navigation.navigate('VendorSchedule')}
+            >
+              <Text style={styles.scheduleButtonText}>Horario de disponibilidad</Text>
+              <Text style={styles.scheduleSub}>Configura tu semana de atención</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.contactButton}
+              onPress={() => navigation.navigate('EditContact')}
+            >
+              <Text style={styles.contactButtonText}>Información de contacto</Text>
+              <Text style={styles.contactSub}>Teléfono, WhatsApp y redes sociales</Text>
+            </TouchableOpacity>
+          </>
         ) : (
-          <Text style={styles.comingSoon}>Próximamente</Text>
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => navigation.navigate('EditContact')}
+          >
+            <Text style={styles.menuButtonText}>Editar perfil</Text>
+            <Text style={styles.menuSub}>Nombre y teléfono</Text>
+          </TouchableOpacity>
         )}
+
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Cerrar Sesión</Text>
@@ -103,6 +128,48 @@ const styles = StyleSheet.create({
   scheduleSub: {
     fontSize: 13,
     color: '#047857',
+    marginTop: 4,
+  },
+  menuButton: {
+    width: '100%',
+    maxWidth: 340,
+    backgroundColor: '#eff6ff',
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
+  },
+  menuButtonText: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#1e3a8a',
+  },
+  menuSub: {
+    fontSize: 13,
+    color: '#1d4ed8',
+    marginTop: 4,
+  },
+  contactButton: {
+    width: '100%',
+    maxWidth: 340,
+    backgroundColor: '#fff7ed',
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    marginBottom: 32,
+    borderWidth: 1,
+    borderColor: '#ffedd5',
+  },
+  contactButtonText: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#7c2d12',
+  },
+  contactSub: {
+    fontSize: 13,
+    color: '#9a3412',
     marginTop: 4,
   },
   comingSoon: {

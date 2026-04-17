@@ -176,9 +176,12 @@ public class RegistroService {
         }
 
         // Validación del contacto del vendedor: no nulo, no vacío
-        if (request.getContactoVen() == null || request.getContactoVen().trim().isEmpty()) {
+        if (request.getWhatsAppLink() == null || request.getWhatsAppLink().trim().isEmpty()) {
             throw new IllegalArgumentException("El contacto del vendedor es obligatorio.");
         }
+
+        // instagramLink es opcional: si viene vacío o nulo, se guarda como null
+        // (no se valida presencia, solo formato si se provee — validado en el frontend)
 
         // 1. Registrar Usuario General
         Usuario usuario = new Usuario();
@@ -200,8 +203,11 @@ public class RegistroService {
         vendedor.setNombreNegocio(request.getNombreNegocio());
         vendedor.setNombrePropietario(request.getNombrePropietario());
         vendedor.setDescripcionNeg(request.getDescripcionNeg());
-        vendedor.setContactoVen(request.getContactoVen());
+        vendedor.setWhatsAppLink(request.getWhatsAppLink());
+        String ig = request.getInstagramLink();
+        vendedor.setInstagramLink((ig != null && !ig.trim().isEmpty()) ? ig.trim() : null);
         vendedor.setUsuario(usuarioGuardado);
+        vendedor.setActivo(false);
 
         if (request.getIdCategoriaV() != null) {
             CategoriaVendedor categoria = categoriaVendedorRepository.findById(request.getIdCategoriaV())
