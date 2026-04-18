@@ -8,7 +8,7 @@ import { registerVendor } from '../services/authService';
 import { getCategorias } from '../services/profileService';
 import { validateVendorDetailsForm } from '../utils/validators';
 
-const VendorDetailsScreen = ({ route, navigation }) => {
+const VendorFinishRegisterScreen = ({ route, navigation }) => {
     const { initialData } = route.params || {};
 
     const [description, setDescription] = useState('');
@@ -232,4 +232,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default VendorDetailsScreen;
+export default VendorFinishRegisterScreen;
