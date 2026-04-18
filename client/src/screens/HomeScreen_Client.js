@@ -56,12 +56,27 @@ const CategoryCard = ({ category }) => (
   </View>
 );
 
-const FilterModal = ({ visible, onClose, categorias, selectedCategorias, onSelectCategorias, onApply, onClear }) => {
+const FilterModal = ({ 
+  visible, 
+  onClose, 
+  categorias, 
+  selectedCategorias, 
+  onSelectCategorias, 
+  selectedDisponibilidad,
+  onSelectDisponibilidad,
+  onApply, 
+  onClear 
+}) => {
   const [localCategorias, setLocalCategorias] = useState(selectedCategorias || []);
+  const [localDisponibilidad, setLocalDisponibilidad] = useState(selectedDisponibilidad);
 
   useEffect(() => {
     setLocalCategorias(selectedCategorias || []);
   }, [selectedCategorias, visible]);
+
+  useEffect(() => {
+    setLocalDisponibilidad(selectedDisponibilidad);
+  }, [selectedDisponibilidad, visible]);
 
   const toggleCategoria = (idCategoriaV) => {
     setLocalCategorias((prev) => {
@@ -73,18 +88,30 @@ const FilterModal = ({ visible, onClose, categorias, selectedCategorias, onSelec
     });
   };
 
+  const handleSelectDisponibilidad = (value) => {
+    setLocalDisponibilidad((prev) => prev === value ? null : value);
+  };
+
   const handleApply = () => {
     onSelectCategorias(localCategorias);
+    onSelectDisponibilidad(localDisponibilidad);
     onApply();
     onClose();
   };
 
   const handleClear = () => {
     setLocalCategorias([]);
+    setLocalDisponibilidad(null);
     onSelectCategorias([]);
+    onSelectDisponibilidad(null);
     onClear();
     onClose();
   };
+
+  const FILTER_OPTIONS_DISPONIBILIDAD = [
+    { value: true, label: 'Disponible' },
+    { value: false, label: 'No disponible' },
+  ];
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -114,6 +141,25 @@ const FilterModal = ({ visible, onClose, categorias, selectedCategorias, onSelec
             }}
           />
           
+          <Text style={[styles.filterSectionLabel, { marginTop: 16 }]}>Disponibilidad</Text>
+          <View style={styles.disponibilidadOptions}>
+            {FILTER_OPTIONS_DISPONIBILIDAD.map((opt) => {
+              const selected = localDisponibilidad === opt.value;
+              return (
+                <Pressable
+                  key={String(opt.value)}
+                  style={[styles.disponibilidadOption, selected && styles.filterOptionSelected]}
+                  onPress={() => handleSelectDisponibilidad(opt.value)}
+                >
+                  <Text style={[styles.filterOptionText, selected && styles.filterOptionTextSelected]}>
+                    {opt.label}
+                  </Text>
+                  {selected && <Ionicons name="checkmark" size={20} color="#C0392B" />}
+                </Pressable>
+              );
+            })}
+          </View>
+          
           <View style={styles.filterButtons}>
             <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
               <Text style={styles.clearButtonText}>Limpiar</Text>
@@ -134,6 +180,7 @@ const HomeScreen_Client = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [categorias, setCategorias] = useState([]);
   const [selectedCategorias, setSelectedCategorias] = useState([]);
+  const [selectedDisponibilidad, setSelectedDisponibilidad] = useState(null);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
 
   useEffect(() => {
@@ -178,15 +225,24 @@ const HomeScreen_Client = ({ navigation }) => {
   }, [searchText]);
 
   const filteredVendors = React.useMemo(() => {
-    if (selectedCategorias.length === 0) return vendors;
-    return vendors.filter((v) => {
-      const categoriaNombre = v.nombreCategoria?.toLowerCase() || '';
-      return categorias.some((c) => 
-        selectedCategorias.includes(c.idCategoriaV) && 
-        categoriaNombre === c.nombreCategoria.toLowerCase()
-      );
-    });
-  }, [vendors, selectedCategorias, categorias]);
+    let result = vendors;
+    
+    if (selectedCategorias.length > 0) {
+      result = result.filter((v) => {
+        const categoriaNombre = v.nombreCategoria?.toLowerCase() || '';
+        return categorias.some((c) => 
+          selectedCategorias.includes(c.idCategoriaV) && 
+          categoriaNombre === c.nombreCategoria.toLowerCase()
+        );
+      });
+    }
+    
+    if (selectedDisponibilidad !== null) {
+      result = result.filter((v) => v.activo === selectedDisponibilidad);
+    }
+    
+    return result;
+  }, [vendors, selectedCategorias, categorias, selectedDisponibilidad]);
 
   return (
     <ScreenLayout>
@@ -217,8 +273,8 @@ const HomeScreen_Client = ({ navigation }) => {
               onPress={() => setFilterModalVisible(true)}
             >
               <View style={styles.filterIconContainer}>
-                <Ionicons name="funnel" size={18} color={selectedCategorias.length > 0 ? "#C0392B" : "#6b7280"} />
-                {selectedCategorias.length > 0 && <View style={styles.filterActiveDot} />}
+                <Ionicons name="funnel" size={18} color={selectedCategorias.length > 0 || selectedDisponibilidad !== null ? "#C0392B" : "#6b7280"} />
+                {(selectedCategorias.length > 0 || selectedDisponibilidad !== null) && <View style={styles.filterActiveDot} />}
               </View>
             </TouchableOpacity>
           </View>
@@ -230,19 +286,34 @@ const HomeScreen_Client = ({ navigation }) => {
           categorias={categorias}
           selectedCategorias={selectedCategorias}
           onSelectCategorias={setSelectedCategorias}
+          selectedDisponibilidad={selectedDisponibilidad}
+          onSelectDisponibilidad={setSelectedDisponibilidad}
           onApply={() => {}}
-          onClear={() => setSelectedCategorias([])}
+          onClear={() => {
+            setSelectedCategorias([]);
+            setSelectedDisponibilidad(null);
+          }}
         />
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {searchText.trim() === '' && selectedCategorias.length === 0
+            {searchText.trim() === '' && selectedCategorias.length === 0 && selectedDisponibilidad === null
               ? 'Recomendados para ti'
+              : searchText.trim() !== '' && selectedCategorias.length > 0 && selectedDisponibilidad !== null
+              ? 'Resultados de búsqueda, categoría y disponibilidad'
               : searchText.trim() !== '' && selectedCategorias.length > 0
               ? 'Resultados de búsqueda y categoría'
+              : searchText.trim() !== '' && selectedDisponibilidad !== null
+              ? 'Resultados de búsqueda y disponibilidad'
               : searchText.trim() !== ''
               ? 'Resultados de búsqueda'
-              : 'Resultados por categoría'}
+              : selectedCategorias.length > 0 && selectedDisponibilidad !== null
+              ? 'Resultados por categoría y disponibilidad'
+              : selectedCategorias.length > 0
+              ? 'Resultados por categoría'
+              : selectedDisponibilidad !== null
+              ? 'Resultados por disponibilidad'
+              : 'Todos los vendedores'}
           </Text>
           <View style={styles.accentLine} />
         </View>
@@ -392,6 +463,18 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginBottom: 8,
     marginLeft: 4,
+  },
+  disponibilidadOptions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  disponibilidadOption: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    backgroundColor: '#f9fafb',
+    alignItems: 'center',
   },
   filterList: {
     maxHeight: 250,
