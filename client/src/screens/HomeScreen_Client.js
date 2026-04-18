@@ -6,11 +6,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Image
+  Image,
+  Modal,
+  Pressable,
+  FlatList,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenLayout from '../Components/ScreenLayout';
 import { getRecomendados, buscarVendedores } from '../services/vendorService';
+import { getCategorias } from '../services/profileService';
 
 const CATEGORIES = [
   { id: 1, name: 'BURGERS', icon: 'fast-food', bg: '#FDE8E8', iconColor: '#C0392B' },
@@ -52,10 +56,97 @@ const CategoryCard = ({ category }) => (
   </View>
 );
 
+const FilterModal = ({ visible, onClose, categorias, selectedCategorias, onSelectCategorias, onApply, onClear }) => {
+  const [localCategorias, setLocalCategorias] = useState(selectedCategorias || []);
+
+  useEffect(() => {
+    setLocalCategorias(selectedCategorias || []);
+  }, [selectedCategorias, visible]);
+
+  const toggleCategoria = (idCategoriaV) => {
+    setLocalCategorias((prev) => {
+      if (prev.includes(idCategoriaV)) {
+        return prev.filter((id) => id !== idCategoriaV);
+      } else {
+        return [...prev, idCategoriaV];
+      }
+    });
+  };
+
+  const handleApply = () => {
+    onSelectCategorias(localCategorias);
+    onApply();
+    onClose();
+  };
+
+  const handleClear = () => {
+    setLocalCategorias([]);
+    onSelectCategorias([]);
+    onClear();
+    onClose();
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <Pressable style={styles.modalOverlay} onPress={onClose}>
+        <Pressable style={styles.filterModalCard} onPress={(e) => e.stopPropagation()}>
+          <Text style={styles.filterModalTitle}>Filtrar por</Text>
+          
+          <Text style={styles.filterSectionLabel}>Categoría</Text>
+          <Text style={styles.filterHint}>Selecciona una o más categorías</Text>
+          <FlatList
+            data={categorias}
+            keyExtractor={(item) => String(item.idCategoriaV)}
+            style={styles.filterList}
+            renderItem={({ item }) => {
+              const selected = localCategorias.includes(item.idCategoriaV);
+              return (
+                <Pressable
+                  style={[styles.filterOption, selected && styles.filterOptionSelected]}
+                  onPress={() => toggleCategoria(item.idCategoriaV)}
+                >
+                  <Text style={[styles.filterOptionText, selected && styles.filterOptionTextSelected]}>
+                    {item.nombreCategoria}
+                  </Text>
+                  {selected && <Ionicons name="checkmark" size={20} color="#C0392B" />}
+                </Pressable>
+              );
+            }}
+          />
+          
+          <View style={styles.filterButtons}>
+            <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
+              <Text style={styles.clearButtonText}>Limpiar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
+              <Text style={styles.applyButtonText}>Aplicar</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+};
+
 const HomeScreen_Client = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categorias, setCategorias] = useState([]);
+  const [selectedCategorias, setSelectedCategorias] = useState([]);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+
+  useEffect(() => {
+    const loadCategorias = async () => {
+      try {
+        const data = await getCategorias();
+        setCategorias(data);
+      } catch (e) {
+        console.error('Error cargando categorías:', e);
+      }
+    };
+    loadCategorias();
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -86,6 +177,17 @@ const HomeScreen_Client = ({ navigation }) => {
     };
   }, [searchText]);
 
+  const filteredVendors = React.useMemo(() => {
+    if (selectedCategorias.length === 0) return vendors;
+    return vendors.filter((v) => {
+      const categoriaNombre = v.nombreCategoria?.toLowerCase() || '';
+      return categorias.some((c) => 
+        selectedCategorias.includes(c.idCategoriaV) && 
+        categoriaNombre === c.nombreCategoria.toLowerCase()
+      );
+    });
+  }, [vendors, selectedCategorias, categorias]);
+
   return (
     <ScreenLayout>
 
@@ -110,12 +212,37 @@ const HomeScreen_Client = ({ navigation }) => {
               value={searchText}
               onChangeText={setSearchText}
             />
+            <TouchableOpacity
+              style={styles.filterButton}
+              onPress={() => setFilterModalVisible(true)}
+            >
+              <View style={styles.filterIconContainer}>
+                <Ionicons name="funnel" size={18} color={selectedCategorias.length > 0 ? "#C0392B" : "#6b7280"} />
+                {selectedCategorias.length > 0 && <View style={styles.filterActiveDot} />}
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
 
+        <FilterModal
+          visible={filterModalVisible}
+          onClose={() => setFilterModalVisible(false)}
+          categorias={categorias}
+          selectedCategorias={selectedCategorias}
+          onSelectCategorias={setSelectedCategorias}
+          onApply={() => {}}
+          onClear={() => setSelectedCategorias([])}
+        />
+
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {searchText.trim() === '' ? 'Recomendados para ti' : 'Resultados de búsqueda'}
+            {searchText.trim() === '' && selectedCategorias.length === 0
+              ? 'Recomendados para ti'
+              : searchText.trim() !== '' && selectedCategorias.length > 0
+              ? 'Resultados de búsqueda y categoría'
+              : searchText.trim() !== ''
+              ? 'Resultados de búsqueda'
+              : 'Resultados por categoría'}
           </Text>
           <View style={styles.accentLine} />
         </View>
@@ -123,10 +250,10 @@ const HomeScreen_Client = ({ navigation }) => {
         <View style={styles.vendorList}>
           {loading ? (
             <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>Cargando antojos...</Text>
-          ) : vendors.length === 0 ? (
+          ) : filteredVendors.length === 0 ? (
             <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>No se encontraron negocios</Text>
           ) : (
-            vendors.map((vendor) => (
+            filteredVendors.map((vendor) => (
               <VendorCard
                 key={vendor.idVendedor}
                 vendor={vendor}
@@ -215,6 +342,112 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#374151',
+  },
+  filterButton: {
+    padding: 8,
+  },
+  filterIconContainer: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  filterActiveDot: {
+    position: 'absolute',
+    top: -2,
+    right: -4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#C0392B',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.48)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterModalCard: {
+    width: '85%',
+    maxWidth: 340,
+    backgroundColor: '#ffffff',
+    borderRadius: 18,
+    padding: 20,
+    maxHeight: '70%',
+  },
+  filterModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  filterSectionLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+    marginLeft: 4,
+  },
+  filterHint: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginBottom: 8,
+    marginLeft: 4,
+  },
+  filterList: {
+    maxHeight: 250,
+  },
+  filterOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    marginVertical: 2,
+    backgroundColor: '#f9fafb',
+  },
+  filterOptionSelected: {
+    backgroundColor: '#FEE2E2',
+  },
+  filterOptionText: {
+    fontSize: 16,
+    color: '#374151',
+  },
+  filterOptionTextSelected: {
+    fontWeight: '600',
+    color: '#C0392B',
+  },
+  filterButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  clearButton: {
+    flex: 1,
+    paddingVertical: 12,
+    marginRight: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    alignItems: 'center',
+  },
+  clearButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  applyButton: {
+    flex: 1,
+    paddingVertical: 12,
+    marginLeft: 8,
+    borderRadius: 10,
+    backgroundColor: '#C0392B',
+    alignItems: 'center',
+  },
+  applyButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
   },
   sectionHeader: {
     marginBottom: 15,
