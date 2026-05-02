@@ -32,3 +32,11 @@
 
 > ### Estado del tablero
 ![Tablero backlog Semana 4 viernes 24 Abril](./imagenes-sprint/Trello4.png)
+
+## Viernes 01 Mayo
+
+> ### Diagrama burndown
+![Diagrama burndown Semana 5 viernes 01 Mayo](./imagenes-sprint/BurndownS5.png)
+
+> ### Estado del tablero
+![Tablero backlog Semana 5 viernes 01 Mayo](./imagenes-sprint/Trello5.png)
