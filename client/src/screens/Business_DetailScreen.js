@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  Dimensions
+  Dimensions,
+  Linking
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenLayout from '../Components/ScreenLayout';
@@ -80,6 +81,39 @@ export default function Business_DetailScreen({ route, navigation }) {
     whatsAppLink
   } = detail;
 
+  const handleWhatsAppPress = async () => {
+    try {
+      let url = null;
+      if (detail?.whatsAppLink) {
+        url = detail.whatsAppLink;
+      } else if (vendor?.phoneNumber) {
+        const raw = String(vendor.phoneNumber);
+        const digits = raw.replace(/[^\d]/g, '');
+        if (digits.length >= 8 && digits.length <= 15) {
+          const message = 'Hola, te encontré en Antojos';
+          url = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+        } else {
+          // Número inválido
+          return;
+        }
+      } else {
+        // No hay enlace ni teléfono
+        return;
+      }
+
+      if (url) {
+        const canOpen = await Linking.canOpenURL(url);
+        if (canOpen) {
+          await Linking.openURL(url);
+        } else {
+          console.warn('No se puede abrir WhatsApp con la URL', url);
+        }
+      }
+    } catch (e) {
+      console.error('Error abriendo WhatsApp', e);
+    }
+  };
+
   // Determinar horario de hoy
   // JS getDay() retorna 0 para Domingo, 1 para Lunes... 6 para Sábado.
   // Pero idDia en la BD parece ser 1 para Lunes, 7 para Domingo.
@@ -149,7 +183,7 @@ export default function Business_DetailScreen({ route, navigation }) {
       </View>
 
       {/* Floating Action Button for Contact */}
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab} onPress={handleWhatsAppPress}>
         <Ionicons name="call" size={30} color="#fff" />
       </TouchableOpacity>
       
