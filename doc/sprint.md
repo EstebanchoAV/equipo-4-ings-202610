@@ -44,7 +44,7 @@
 ## Viernes 08 Mayo
 
 > ### Diagrama burndown
-![Diagrama burndown Semana 6 viernes 08 Mayo](./imagenes-sprint/BurndownS6.png)
+![Diagrama burndown Semana 6 viernes 08 Mayo](./imagenes-sprint/BurndownSem6.png)
 
 > ### Estado del tablero
 ![Tablero backlog Semana 6 viernes 08 Mayo](./imagenes-sprint/Trello6.png)
