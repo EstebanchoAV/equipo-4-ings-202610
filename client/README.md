@@ -1,43 +1,43 @@
-# Antojos UPB - Frontend (Cliente)
+# Antojos UPB - Frontend (Client)
 
-Esta es la aplicación móvil del proyecto **Antojos UPB**, desarrollada con **React Native** utilizando entorno administrado por **Expo**.
+This is the mobile app for the **Antojos UPB** project, developed with **React Native** using the **Expo**-managed environment.
 
-## 📋 Requisitos Previos
+## 📋 Prerequisites
 
-1. **Node.js** (versión LTS instalada en el sistema).
-2. *(Opcional pero recomendado)* La aplicación **Expo Go** instalada en tu dispositivo móvil iOS o Android.
+1. **Node.js** (LTS version installed on the system).
+2. *(Optional but recommended)* The **Expo Go** app installed on your iOS or Android mobile device.
 
-## ⚙️ Instalación de Dependencias
+## ⚙️ Installing Dependencies
 
-1. Abre una terminal y dirígete al interior de la carpeta `client`.
-2. Instala las librerías y dependencias ejecutando:
+1. Open a terminal and navigate to the `client` folder.
+2. Install the libraries and dependencies by running:
    ```bash
    npm install
    ```
 
-## 🔌 Conexión con el Servidor Backend
+## 🔌 Connecting to the Backend Server
 
-Antes de ejecutar, recuerda revisar la configuración de red.
-Si vas a probar la aplicación **en un dispositivo móvil físico**, debes saber que usar `http://localhost:8080/` para tus llamadas a la API **no funcionará**, ya que el celular buscará un servidor dentro de sí mismo.
+Before running the app, remember to check your network settings.
+If you’re testing the app **on a physical mobile device**, be aware that using `http://localhost:8080/` for your API calls **will not work**, as the device will look for a server within itself.
 
-**Solución:** Ve a los archivos de configuración o servicios (por ejemplo, `src/services/authService.js`) y cambia `localhost` por la **Dirección IP local** de tu computadora conectada al Wi-Fi (Pista: usa el comando `ipconfig` en Windows).
-> Ejemplo: `http://192.168.1.15:8080/api/auth`
+**Solution:** Go to the configuration or service files (for example, `src/services/authService.js`) and replace `localhost` with the **local IP address** of your computer connected to Wi-Fi (use the `ipconfig` command in Windows).
+> Example: `http://192.168.1.15:8080/api/auth`
 
-## 🚀 Ejecución del Frontend
+## 🚀 Running the Frontend
 
-Para iniciar el bundler de Metro y generar el código QR, ejecuta:
+To start the Metro bundler and generate the QR code, run:
 ```bash
 npx expo start
 ```
 
-## 📱 Iniciar Visualización
-- **Dispositivo físico (Expo Go):** Escanea el código QR desde la App en Android, o con la cámara en iOS.
-- **Emulador Android:** Presiona la tecla `a` en la terminal de Expo (requiere Android Studio).
-- **Simulador iOS:** Presiona la tecla `i` (requiere macOS y Xcode).
-- **Navegador Web:** Presiona la tecla `w` en la terminal de Expo.
+## 📱 Launching the Viewer
+- **Physical device (Expo Go):** Scan the QR code using the app on Android, or with the camera on iOS.
+- **Android Emulator:** Press the `a` key in the Expo terminal (requires Android Studio).
+- **iOS Simulator:** Press the `i` key (requires macOS and Xcode).
+- **Web Browser:** Press the `w` key in the Expo terminal.
 
-  > ***Nota sobre la versión Web:*** Si es tu primera vez ejecutándolo en el navegador, es posible que el proyecto te arroje un aviso solicitando librerías adicionales. De ser así, detén el servidor (`Ctrl + C`) y ejecuta:
+  > ***Note on the Web version:*** If this is your first time running it in the browser, the project may display a message requesting additional libraries. If so, stop the server (`Ctrl + C`) and run:
   > ```bash
   > npx expo install react-native-web react-dom @expo/metro-runtime
   > ```
-  > Luego, vuelve a iniciar con `npx expo start`.
+  > Then, restart with `npx expo start`.
