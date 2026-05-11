@@ -15,7 +15,7 @@ public class VendedorPerfilRequest {
     @NotBlank(message = "La descripción es obligatoria")
 
 
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\\s.,!?()\\-]{2,500}$", message = "La descripción contiene caracteres no permitidos")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\\s.,!?()\\-]{2,200}$", message = "La descripción contiene caracteres no permitidos")
     private String descripcionNeg;
 
     @NotNull(message = "La categoría es obligatoria")
