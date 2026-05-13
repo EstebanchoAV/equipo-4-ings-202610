@@ -124,6 +124,20 @@ export default function Business_DetailScreen({ route, navigation }) {
     ? `${currentSchedule.horaInicio} - ${currentSchedule.horaFin}` 
     : 'Cerrado hoy';
 
+  // Construir horario semanal
+  const weeklySchedule = [1, 2, 3, 4, 5, 6, 7].map(dayId => {
+    const daySchedule = horarios?.find(h => h.idDia === dayId);
+    return {
+      dayId,
+      dayName: DAYS_NAMES[dayId],
+      isOpen: daySchedule?.activo ?? false,
+      time: daySchedule?.activo
+        ? `${daySchedule.horaInicio} - ${daySchedule.horaFin}`
+        : 'Cerrado',
+      isToday: dayId === todayMapped,
+    };
+  });
+
   return (
     <ScreenLayout containerStyle={{ backgroundColor: '#fff' }}>
       <View style={styles.customHeader}>
@@ -162,6 +176,26 @@ export default function Business_DetailScreen({ route, navigation }) {
           </View>
           {/* Removidos dirección y reseñas según requerimiento */}
         </View>
+      </View>
+
+      {/* Sección de horario semanal */}
+      <View style={styles.scheduleSection}>
+        <Text style={styles.scheduleTitle}>Horario Semanal</Text>
+        {weeklySchedule.map(day => (
+          <View key={day.dayId} style={styles.scheduleRow}>
+            <View>
+              <Text style={styles.scheduleDayName}>{day.dayName}</Text>
+            </View>
+            <Text
+              style={[
+                styles.scheduleDayTime,
+                day.isOpen ? styles.scheduleDayTimeOpen : styles.scheduleDayTimeClosed,
+              ]}
+            >
+              {day.time}
+            </Text>
+          </View>
+        ))}
       </View>
 
       {/* Sección de productos sin cabecera (Título y Ver todo removidos) */}
@@ -360,5 +394,38 @@ const styles = StyleSheet.create({
   },
   bottomGap: {
     height: 100,
-  }
+  },
+  scheduleSection: {
+    marginTop: 30,
+    paddingHorizontal: 20,
+  },
+  scheduleTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  scheduleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  scheduleDayName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  scheduleDayTime: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  scheduleDayTimeClosed: {
+    color: '#94A3B8',
+  },
+  scheduleDayTimeOpen: {
+    color: '#22C55E',
+  },
 });
