@@ -63,6 +63,7 @@ export const validateBusinessIdentityForm = (form) => {
     }
     if (form.nombreNegocio && !regexName.test(form.nombreNegocio)) errors.push("• Nombre de negocio inválido.");
     if (form.descripcionNeg && !regexText.test(form.descripcionNeg)) errors.push("• La presentación contiene caracteres inválidos.");
+    if (form.descripcionNeg && form.descripcionNeg.length > 200) errors.push("• La presentación no puede superar los 200 caracteres.");
     return errors;
 };
 
