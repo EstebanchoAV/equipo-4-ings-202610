@@ -36,7 +36,7 @@ const VendorCard = ({ vendor, onPress }) => (
     <View style={styles.vendorInfo}>
       <Text style={styles.vendorName}>{vendor.nombreNegocio}</Text>
       <Text style={styles.vendorDetails}>
-        {vendor.nombreCategoria || 'Sin categoría'} • {vendor.estado}
+        {(vendor.nombreCategorias?.join(', ')) || 'Sin categoría'} • {vendor.estado}
       </Text>
     </View>
     <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
@@ -229,10 +229,10 @@ const HomeScreen_Client = ({ navigation }) => {
     
     if (selectedCategorias.length > 0) {
       result = result.filter((v) => {
-        const categoriaNombre = v.nombreCategoria?.toLowerCase() || '';
+        const categoriaNombres = v.nombreCategorias?.map(n => n.toLowerCase()) || [];
         return categorias.some((c) => 
           selectedCategorias.includes(c.idCategoriaV) && 
-          categoriaNombre === c.nombreCategoria.toLowerCase()
+          categoriaNombres.includes(c.nombreCategoria.toLowerCase())
         );
       });
     }

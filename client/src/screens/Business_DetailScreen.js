@@ -73,6 +73,7 @@ export default function Business_DetailScreen({ route, navigation }) {
 
   const {
     nombreNegocio,
+    nombreCategorias,
     descripcionNeg,
     activo,
     estado,
@@ -165,6 +166,9 @@ export default function Business_DetailScreen({ route, navigation }) {
 
       <View style={styles.infoSection}>
         <Text style={styles.businessName}>{nombreNegocio}</Text>
+        {nombreCategorias && nombreCategorias.length > 0 && (
+          <Text style={styles.categoryLine}>{nombreCategorias.join(', ')}</Text>
+        )}
         <Text style={styles.description}>
           {descripcionNeg || 'Deliciosos snacks locales y postres artesanales preparados cada día con ingredientes frescos.'}
         </Text>
@@ -306,6 +310,13 @@ const styles = StyleSheet.create({
     color: '#4B5563',
     lineHeight: 24,
     marginBottom: 20,
+  },
+  categoryLine: {
+    fontSize: 14,
+    color: '#047857',
+    fontWeight: '600',
+    marginBottom: 12,
+    fontStyle: 'italic',
   },
   detailList: {
     gap: 12,

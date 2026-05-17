@@ -4,6 +4,7 @@ import com.equipo4.antojosupb.dto.VendedorEstadoResponse;
 import com.equipo4.antojosupb.dto.VendedorDetalleResponse;
 import com.equipo4.antojosupb.dto.HorarioDiaResponse;
 import com.equipo4.antojosupb.dto.ProductoResponse;
+import com.equipo4.antojosupb.entities.CategoriaVendedor;
 import com.equipo4.antojosupb.entities.Vendedor;
 import com.equipo4.antojosupb.repository.VendedorRepository;
 import com.equipo4.antojosupb.repository.CatalogoRepository;
@@ -44,10 +45,13 @@ public class VendedoresPublicosService {
     }
 
     private static VendedorEstadoResponse toResponse(Vendedor vendedor, boolean activo) {
+        List<String> nombreCategorias = vendedor.getCategorias() != null
+                ? vendedor.getCategorias().stream().map(CategoriaVendedor::getNombreCategoria).collect(Collectors.toList())
+                : Collections.emptyList();
         return new VendedorEstadoResponse(
                 vendedor.getIdVendedor(),
                 vendedor.getNombreNegocio(),
-                vendedor.getCategoriaVendedor() != null ? vendedor.getCategoriaVendedor().getNombreCategoria() : null,
+                nombreCategorias,
                 activo,
                 activo ? "Abierto" : "Cerrado",
                 activo ? "blanco-hueso" : "gris",
@@ -83,7 +87,6 @@ public class VendedoresPublicosService {
     public Optional<VendedorDetalleResponse> obtenerDetalle(int idVendedor) {
         return vendedorRepository.findById(idVendedor)
                 .map(vendedor -> {
-                    // Nota: Se ignora la lógica de "activo" automático por ahora según requerimiento
                     List<HorarioDiaResponse> horarios = horarioVendedorService.obtenerHorarioSemanal(vendedor.getUsuario().getIdUser());
                     
                     List<ProductoResponse> productos = catalogoRepository.findByVendedor_IdVendedor(idVendedor)
@@ -92,10 +95,14 @@ public class VendedoresPublicosService {
                                     .collect(Collectors.toList()))
                             .orElse(Collections.emptyList());
 
+                    List<String> nombreCategorias = vendedor.getCategorias() != null
+                            ? vendedor.getCategorias().stream().map(CategoriaVendedor::getNombreCategoria).collect(Collectors.toList())
+                            : Collections.emptyList();
+
                     return new VendedorDetalleResponse(
                             vendedor.getIdVendedor(),
                             vendedor.getNombreNegocio(),
-                            vendedor.getCategoriaVendedor() != null ? vendedor.getCategoriaVendedor().getNombreCategoria() : null,
+                            nombreCategorias,
                             vendedor.isActivo(),
                             vendedor.isActivo() ? "Abierto" : "Cerrado",
                             vendedor.isActivo() ? "blanco-hueso" : "gris",

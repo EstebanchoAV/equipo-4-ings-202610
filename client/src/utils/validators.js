@@ -58,8 +58,13 @@ export const validateVendorBasicForm = (businessName, ownerName, email, phone, p
  */
 export const validateBusinessIdentityForm = (form) => {
     let errors = [];
-    if (!form.nombreNegocio?.trim() || !form.descripcionNeg?.trim() || !form.idCategoriaV) {
+    if (!form.nombreNegocio?.trim() || !form.descripcionNeg?.trim()) {
         errors.push(ERRORS.REQUIRED);
+    }
+    if (!form.idCategoriasV || form.idCategoriasV.length === 0) {
+        errors.push(ERRORS.CATEGORY);
+    } else if (form.idCategoriasV.length > 5) {
+        errors.push("• Máximo 5 categorías permitidas.");
     }
     if (form.nombreNegocio && !regexName.test(form.nombreNegocio)) errors.push("• Nombre de negocio inválido.");
     if (form.descripcionNeg && !regexText.test(form.descripcionNeg)) errors.push("• La presentación contiene caracteres inválidos.");
@@ -89,10 +94,15 @@ export const validateContactForm = (form) => {
 /**
  * Valida la segunda fase del registro de Vendedores (Detalles).
  */
-export const validateVendorDetailsForm = (description, categoryId, whatsappLink, instagramLink) => {
+export const validateVendorDetailsForm = (description, categoryIds, whatsappLink, instagramLink) => {
     let errors = [];
-    if (!description?.trim() || !whatsappLink?.trim() || !categoryId) {
+    if (!description?.trim() || !whatsappLink?.trim()) {
         errors.push(ERRORS.REQUIRED);
+    }
+    if (!categoryIds || categoryIds.length === 0) {
+        errors.push(ERRORS.CATEGORY);
+    } else if (categoryIds.length > 5) {
+        errors.push("• Máximo 5 categorías permitidas.");
     }
     if (description && !regexText.test(description)) errors.push(ERRORS.DESCRIPTION);
     if (whatsappLink && !regexWhatsApp.test(whatsappLink)) errors.push(ERRORS.WHATSAPP);

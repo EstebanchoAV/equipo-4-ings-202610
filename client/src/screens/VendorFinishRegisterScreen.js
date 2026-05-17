@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, ActivityIndicator } from 'react-native';
 import BoxSha from '../Components/BoxSha';
-import ModalSelectField from '../Components/ModalSelectField';
+import ChecklistSelectField from '../Components/ChecklistSelectField';
 import ScreenLayout from '../Components/ScreenLayout';
 import BackButton from '../Components/BackButton';
 import { registerVendor } from '../services/authService';
@@ -14,7 +14,7 @@ const VendorFinishRegisterScreen = ({ route, navigation }) => {
     const [description, setDescription] = useState('');
     const [whatsappLink, setWhatsappLink] = useState('');
     const [instagramLink, setInstagramLink] = useState('');
-    const [categoryId, setCategoryId] = useState('');
+    const [categoryIds, setCategoryIds] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loadingCats, setLoadingCats] = useState(true);
 
@@ -54,7 +54,7 @@ const VendorFinishRegisterScreen = ({ route, navigation }) => {
         const wl = whatsappLink.trim();
         const il = instagramLink.trim();
 
-        const errors = validateVendorDetailsForm(ds, categoryId, wl, il);
+        const errors = validateVendorDetailsForm(ds, categoryIds, wl, il);
 
         if (errors.length > 0) {
             showAlert("Campos incorrectos", errors.join("\n"));
@@ -70,7 +70,7 @@ const VendorFinishRegisterScreen = ({ route, navigation }) => {
                 contrasena: initialData.p,
                 telefono: initialData.t,
                 descripcionNeg: ds,
-                idCategoriaV: categoryId,
+                idCategoriasV: categoryIds,
                 whatsAppLink: wl,
                 instagramLink: il
             };
@@ -113,13 +113,15 @@ const VendorFinishRegisterScreen = ({ route, navigation }) => {
                         {loadingCats ? (
                             <ActivityIndicator size="small" color="#064e3b" />
                         ) : (
-                            <ModalSelectField
-                                title="Categoría del negocio"
-                                placeholder="Selecciona una categoría..."
-                                hintText="Toca para elegir categoría"
-                                value={categoryId}
-                                onSelect={setCategoryId}
+                            <ChecklistSelectField
+                                title="Categorías del negocio"
+                                placeholder="Selecciona categorías (1-5)"
+                                hintText="Toca para elegir categorías"
+                                values={categoryIds}
+                                onSelect={setCategoryIds}
                                 options={categoryOptions}
+                                minSelect={1}
+                                maxSelect={5}
                                 marginBottom={false}
                             />
                         )}
