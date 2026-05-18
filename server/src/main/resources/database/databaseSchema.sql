@@ -1,370 +1,152 @@
 ﻿USE [master]
 GO
-/****** Object:  Database [AntojosUPBdb]    Script Date: 15/04/2026 11:57:23 p. m. ******/
+
+-- Eliminar BD si ya existe
+IF EXISTS (SELECT name FROM sys.databases WHERE name = N'AntojosUPBdb')
+BEGIN
+    ALTER DATABASE [AntojosUPBdb] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE [AntojosUPBdb];
+END
+GO
+
+-- Crear BD sin rutas hardcodeadas (SQL Server elige la ruta por defecto)
 CREATE DATABASE [AntojosUPBdb]
- CONTAINMENT = NONE
- ON  PRIMARY 
-( NAME = N'AntojosUPBdb', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL17.MSSQLSERVER\MSSQL\DATA\AntojosUPBdb.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
- LOG ON 
-( NAME = N'AntojosUPBdb_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL17.MSSQLSERVER\MSSQL\DATA\AntojosUPBdb_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
- WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
 GO
-ALTER DATABASE [AntojosUPBdb] SET COMPATIBILITY_LEVEL = 170
+
+ALTER DATABASE [AntojosUPBdb] SET COMPATIBILITY_LEVEL = 150  -- SQL Server 2019
 GO
-IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
-begin
-EXEC [AntojosUPBdb].[dbo].[sp_fulltext_database] @action = 'enable'
-end
-GO
-ALTER DATABASE [AntojosUPBdb] SET ANSI_NULL_DEFAULT OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET ANSI_NULLS OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET ANSI_PADDING OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET ANSI_WARNINGS OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET ARITHABORT OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET AUTO_CLOSE OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET AUTO_SHRINK OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET AUTO_UPDATE_STATISTICS ON 
-GO
-ALTER DATABASE [AntojosUPBdb] SET CURSOR_CLOSE_ON_COMMIT OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET CURSOR_DEFAULT  GLOBAL 
-GO
-ALTER DATABASE [AntojosUPBdb] SET CONCAT_NULL_YIELDS_NULL OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET NUMERIC_ROUNDABORT OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET QUOTED_IDENTIFIER OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET RECURSIVE_TRIGGERS OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET  ENABLE_BROKER 
-GO
-ALTER DATABASE [AntojosUPBdb] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET DATE_CORRELATION_OPTIMIZATION OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET TRUSTWORTHY OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET ALLOW_SNAPSHOT_ISOLATION OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET PARAMETERIZATION SIMPLE 
-GO
-ALTER DATABASE [AntojosUPBdb] SET READ_COMMITTED_SNAPSHOT OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET HONOR_BROKER_PRIORITY OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET RECOVERY FULL 
-GO
-ALTER DATABASE [AntojosUPBdb] SET  MULTI_USER 
-GO
-ALTER DATABASE [AntojosUPBdb] SET PAGE_VERIFY CHECKSUM  
-GO
-ALTER DATABASE [AntojosUPBdb] SET DB_CHAINING OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
-GO
-ALTER DATABASE [AntojosUPBdb] SET TARGET_RECOVERY_TIME = 60 SECONDS 
-GO
-ALTER DATABASE [AntojosUPBdb] SET DELAYED_DURABILITY = DISABLED 
-GO
-ALTER DATABASE [AntojosUPBdb] SET OPTIMIZED_LOCKING = OFF 
-GO
-ALTER DATABASE [AntojosUPBdb] SET ACCELERATED_DATABASE_RECOVERY = OFF  
-GO
-ALTER DATABASE [AntojosUPBdb] SET QUERY_STORE = ON
-GO
-ALTER DATABASE [AntojosUPBdb] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
-GO
+
 USE [AntojosUPBdb]
 GO
-/****** Object:  Table [dbo].[CATALOGO]    Script Date: 15/04/2026 11:57:23 p. m. ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[CATALOGO](
-	[IdCatalogo] [int] IDENTITY(1,1) NOT NULL,
-	[NombreCatalogo] [varchar](100) NOT NULL,
-	[FechaCreacion] [datetime] NULL,
-	[IdVendedor] [int] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdCatalogo] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-UNIQUE NONCLUSTERED 
-(
-	[IdVendedor] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[CATEGORIAVENDEDOR]    Script Date: 15/04/2026 11:57:23 p. m. ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[CATEGORIAVENDEDOR](
-	[IdCategoriaV] [int] IDENTITY(1,1) NOT NULL,
-	[NombreCategoria] [nvarchar](50) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdCategoriaV] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[CLIENTES]    Script Date: 15/04/2026 11:57:23 p. m. ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[CLIENTES](
-	[IdCliente] [int] IDENTITY(1,1) NOT NULL,
-	[NombreClient] [nvarchar](150) NOT NULL,
-	[IdUser] [int] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdCliente] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[DIASSEMANA]    Script Date: 15/04/2026 11:57:23 p. m. ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[DIASSEMANA](
-	[IdDia] [int] IDENTITY(1,1) NOT NULL,
-	[NombreDia] [varchar](20) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdDia] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-UNIQUE NONCLUSTERED 
-(
-	[NombreDia] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[HORARIOSV]    Script Date: 15/04/2026 11:57:23 p. m. ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[HORARIOSV](
-	[IdHorario] [int] IDENTITY(1,1) NOT NULL,
-	[HoraInicio] [time](7) NOT NULL,
-	[HoraFin] [time](7) NOT NULL,
-	[IdDia] [int] NOT NULL,
-	[IdVendedor] [int] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdHorario] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[PRODUCTOS]    Script Date: 15/04/2026 11:57:23 p. m. ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PRODUCTOS](
-	[IdProducto] [int] IDENTITY(1,1) NOT NULL,
-	[NombreProd] [varchar](150) NOT NULL,
-	[DescripcionProd] [nvarchar](max) NULL,
-	[Precio] [int] NOT NULL,
-	[IdCatalogo] [int] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdProducto] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[ROLUSUARIO]    Script Date: 15/04/2026 11:57:23 p. m. ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
+-- ============================================================
+-- TABLAS
+-- ============================================================
+
 CREATE TABLE [dbo].[ROLUSUARIO](
-	[IdRol] [int] IDENTITY(1,1) NOT NULL,
-	[NombreRol] [varchar](20) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdRol] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-UNIQUE NONCLUSTERED 
-(
-	[NombreRol] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
+    [IdRol]     [int] IDENTITY(1,1) NOT NULL,
+    [NombreRol] [varchar](20) NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdRol] ASC),
+    UNIQUE ([NombreRol])
+)
 GO
-/****** Object:  Table [dbo].[USUARIOS]    Script Date: 15/04/2026 11:57:23 p. m. ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[USUARIOS](
-	[IdUser] [int] IDENTITY(1,1) NOT NULL,
-	[Email] [varchar](150) NOT NULL,
-	[Contrasena] [nvarchar](150) NOT NULL,
-	[FechaRegis] [datetime] NOT NULL,
-	[IdRol] [int] NOT NULL,
-	[telefono] [varchar](20) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdUser] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-UNIQUE NONCLUSTERED 
-(
-	[telefono] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-UNIQUE NONCLUSTERED 
-(
-	[Email] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
+    [IdUser]    [int] IDENTITY(1,1) NOT NULL,
+    [Email]     [varchar](150) NOT NULL,
+    [Contrasena][nvarchar](150) NOT NULL,
+    [FechaRegis][datetime] NOT NULL CONSTRAINT [DF_USUARIOS_FechaRegis] DEFAULT (GETDATE()),
+    [IdRol]     [int] NOT NULL,
+    [telefono]  [varchar](20) NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdUser] ASC),
+    UNIQUE ([Email]),
+    UNIQUE ([telefono]),
+    CONSTRAINT [FK_RolUsuario_Usuarios] FOREIGN KEY ([IdRol]) REFERENCES [dbo].[ROLUSUARIO]([IdRol]),
+    CONSTRAINT [CHK_Email_Formato]    CHECK ([Email] LIKE '%_@%_._%' AND NOT [Email] LIKE '%[^a-z0-9._-]%@%' AND NOT [Email] LIKE '%@%[^a-z0-9.-]%'),
+    CONSTRAINT [CHK_Telefono_Formato] CHECK (LEN([telefono]) = 10 AND [telefono] LIKE '3[0-5]%' AND NOT [telefono] LIKE '%[^0-9]%'),
+    CONSTRAINT [CK_ContrasenaVen]     CHECK (LEN([Contrasena]) >= 8)
+)
 GO
-/****** Object:  Table [dbo].[VENDEDORES]    Script Date: 15/04/2026 11:57:23 p. m. ******/
-SET ANSI_NULLS ON
+
+CREATE TABLE [dbo].[CLIENTES](
+    [IdCliente]    [int] IDENTITY(1,1) NOT NULL,
+    [NombreClient] [nvarchar](150) NOT NULL,
+    [IdUser]       [int] NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdCliente] ASC),
+    CONSTRAINT [FK_Clientes_Usuarios] FOREIGN KEY ([IdUser]) REFERENCES [dbo].[USUARIOS]([IdUser]),
+    CONSTRAINT [CHK_Nombre_Formato]   CHECK (NOT [NombreClient] LIKE '%[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ]%' AND LEN([NombreClient]) >= 2)
+)
 GO
-SET QUOTED_IDENTIFIER ON
+
+CREATE TABLE [dbo].[CATEGORIAVENDEDOR](
+    [IdCategoriaV]   [int] IDENTITY(1,1) NOT NULL,
+    [NombreCategoria][nvarchar](50) NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdCategoriaV] ASC)
+)
 GO
+
 CREATE TABLE [dbo].[VENDEDORES](
-	[IdVendedor] [int] IDENTITY(1,1) NOT NULL,
-	[NombreNegocio] [nvarchar](150) NOT NULL,
-	[DescripcionNeg] [nvarchar](max) NULL,
-	[WhatsAppLink] [varchar](120) NOT NULL,
-	[IdUser] [int] NOT NULL,
-	[NombrePropietario] [nvarchar](150) NOT NULL,
-	[Activo] [bit] NOT NULL,
-	[InstagramLink] [varchar](120) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdVendedor] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-UNIQUE NONCLUSTERED 
-(
-	[NombreNegocio] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+    [IdVendedor]      [int] IDENTITY(1,1) NOT NULL,
+    [NombreNegocio]   [nvarchar](150) NOT NULL,
+    [DescripcionNeg]  [nvarchar](max) NULL,
+    [WhatsAppLink]    [varchar](120) NOT NULL,
+    [IdUser]          [int] NOT NULL,
+    [NombrePropietario][nvarchar](150) NOT NULL,
+    [Activo]          [bit] NOT NULL CONSTRAINT [DF_VENDEDORES_Activo] DEFAULT (0),
+    [InstagramLink]   [varchar](120) NULL,
+    PRIMARY KEY CLUSTERED ([IdVendedor] ASC),
+    UNIQUE ([NombreNegocio]),
+    CONSTRAINT [FK_Vendedores_Usuarios] FOREIGN KEY ([IdUser]) REFERENCES [dbo].[USUARIOS]([IdUser])
+)
 GO
-/****** Object:  Table [dbo].[VENDEDOR_CATEGORIA]    Script Date: 17/05/2026 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[VENDEDOR_CATEGORIA](
-	[IdVendedor] [int] NOT NULL,
-	[IdCategoriaV] [int] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[IdVendedor] ASC,
-	[IdCategoriaV] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-ALTER TABLE [dbo].[CATALOGO] ADD  DEFAULT (getdate()) FOR [FechaCreacion]
-GO
-ALTER TABLE [dbo].[USUARIOS] ADD  CONSTRAINT [DF_USUARIOS_FechaRegis]  DEFAULT (getdate()) FOR [FechaRegis]
-GO
-ALTER TABLE [dbo].[VENDEDORES] ADD  DEFAULT ((0)) FOR [Activo]
-GO
-ALTER TABLE [dbo].[CATALOGO]  WITH CHECK ADD  CONSTRAINT [FK_Catalogos_Vendedores] FOREIGN KEY([IdVendedor])
-REFERENCES [dbo].[VENDEDORES] ([IdVendedor])
-GO
-ALTER TABLE [dbo].[CATALOGO] CHECK CONSTRAINT [FK_Catalogos_Vendedores]
-GO
-ALTER TABLE [dbo].[CLIENTES]  WITH CHECK ADD  CONSTRAINT [FK_Clientes_Usuarios] FOREIGN KEY([IdUser])
-REFERENCES [dbo].[USUARIOS] ([IdUser])
-GO
-ALTER TABLE [dbo].[CLIENTES] CHECK CONSTRAINT [FK_Clientes_Usuarios]
-GO
-ALTER TABLE [dbo].[HORARIOSV]  WITH CHECK ADD  CONSTRAINT [FK_HORARIOS_DIA] FOREIGN KEY([IdDia])
-REFERENCES [dbo].[DIASSEMANA] ([IdDia])
-GO
-ALTER TABLE [dbo].[HORARIOSV] CHECK CONSTRAINT [FK_HORARIOS_DIA]
-GO
-ALTER TABLE [dbo].[HORARIOSV]  WITH CHECK ADD  CONSTRAINT [FK_HORARIOS_VENDEDORES] FOREIGN KEY([IdVendedor])
-REFERENCES [dbo].[VENDEDORES] ([IdVendedor])
-GO
-ALTER TABLE [dbo].[HORARIOSV] CHECK CONSTRAINT [FK_HORARIOS_VENDEDORES]
-GO
-ALTER TABLE [dbo].[PRODUCTOS]  WITH CHECK ADD  CONSTRAINT [FK_Productos_Catalogos] FOREIGN KEY([IdCatalogo])
-REFERENCES [dbo].[CATALOGO] ([IdCatalogo])
-GO
-ALTER TABLE [dbo].[PRODUCTOS] CHECK CONSTRAINT [FK_Productos_Catalogos]
-GO
-ALTER TABLE [dbo].[USUARIOS]  WITH CHECK ADD  CONSTRAINT [FK_RolUsuario_Usuarios] FOREIGN KEY([IdRol])
-REFERENCES [dbo].[ROLUSUARIO] ([IdRol])
-GO
-ALTER TABLE [dbo].[USUARIOS] CHECK CONSTRAINT [FK_RolUsuario_Usuarios]
+    [IdVendedor]   [int] NOT NULL,
+    [IdCategoriaV] [int] NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdVendedor] ASC, [IdCategoriaV] ASC),
+    CONSTRAINT [FK_VC_Vendedores] FOREIGN KEY ([IdVendedor])   REFERENCES [dbo].[VENDEDORES]([IdVendedor]),
+    CONSTRAINT [FK_VC_Categoria]  FOREIGN KEY ([IdCategoriaV]) REFERENCES [dbo].[CATEGORIAVENDEDOR]([IdCategoriaV])
+)
 GO
 
-GO
-ALTER TABLE [dbo].[VENDEDORES]  WITH CHECK ADD  CONSTRAINT [FK_Vendedores_Usuarios] FOREIGN KEY([IdUser])
-REFERENCES [dbo].[USUARIOS] ([IdUser])
-GO
-ALTER TABLE [dbo].[VENDEDORES] CHECK CONSTRAINT [FK_Vendedores_Usuarios]
-GO
-ALTER TABLE [dbo].[VENDEDOR_CATEGORIA]  WITH CHECK ADD  CONSTRAINT [FK_VC_Vendedores] FOREIGN KEY([IdVendedor])
-REFERENCES [dbo].[VENDEDORES] ([IdVendedor])
-GO
-ALTER TABLE [dbo].[VENDEDOR_CATEGORIA] CHECK CONSTRAINT [FK_VC_Vendedores]
-GO
-ALTER TABLE [dbo].[VENDEDOR_CATEGORIA]  WITH CHECK ADD  CONSTRAINT [FK_VC_Categoria] FOREIGN KEY([IdCategoriaV])
-REFERENCES [dbo].[CATEGORIAVENDEDOR] ([IdCategoriaV])
-GO
-ALTER TABLE [dbo].[VENDEDOR_CATEGORIA] CHECK CONSTRAINT [FK_VC_Categoria]
-GO
-ALTER TABLE [dbo].[CLIENTES]  WITH CHECK ADD  CONSTRAINT [CHK_Nombre_Formato] CHECK  ((NOT [NombreClient] like '%[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ]%' AND len([NombreClient])>=(2)))
-GO
-ALTER TABLE [dbo].[CLIENTES] CHECK CONSTRAINT [CHK_Nombre_Formato]
-GO
-ALTER TABLE [dbo].[PRODUCTOS]  WITH CHECK ADD  CONSTRAINT [CK_PrecioPositivo] CHECK  (([Precio]>=(0)))
-GO
-ALTER TABLE [dbo].[PRODUCTOS] CHECK CONSTRAINT [CK_PrecioPositivo]
-GO
-ALTER TABLE [dbo].[USUARIOS]  WITH CHECK ADD  CONSTRAINT [CHK_Email_Formato] CHECK  (([Email] like '%_@%_._%' AND NOT [Email] like '%[^a-z0-9._-]%@%' AND NOT [Email] like '%@%[^a-z0-9.-]%'))
-GO
-ALTER TABLE [dbo].[USUARIOS] CHECK CONSTRAINT [CHK_Email_Formato]
-GO
-ALTER TABLE [dbo].[USUARIOS]  WITH CHECK ADD  CONSTRAINT [CHK_Telefono_Formato] CHECK  ((len([telefono])=(10) AND [telefono] like '3[0-5]%' AND NOT [telefono] like '%[^0-9]%'))
-GO
-ALTER TABLE [dbo].[USUARIOS] CHECK CONSTRAINT [CHK_Telefono_Formato]
-GO
-ALTER TABLE [dbo].[USUARIOS]  WITH CHECK ADD  CONSTRAINT [CK_ContrasenaVen] CHECK  ((len([Contrasena])>=(8)))
-GO
-ALTER TABLE [dbo].[USUARIOS] CHECK CONSTRAINT [CK_ContrasenaVen]
-GO
-USE [master]
-GO
-ALTER DATABASE [AntojosUPBdb] SET  READ_WRITE 
+CREATE TABLE [dbo].[CATALOGO](
+    [IdCatalogo]    [int] IDENTITY(1,1) NOT NULL,
+    [NombreCatalogo][varchar](100) NOT NULL,
+    [FechaCreacion] [datetime] NULL CONSTRAINT [DF_CATALOGO_FechaCreacion] DEFAULT (GETDATE()),
+    [IdVendedor]    [int] NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdCatalogo] ASC),
+    UNIQUE ([IdVendedor]),
+    CONSTRAINT [FK_Catalogos_Vendedores] FOREIGN KEY ([IdVendedor]) REFERENCES [dbo].[VENDEDORES]([IdVendedor])
+)
 GO
 
-USE [AntojosUPBdb]
+CREATE TABLE [dbo].[PRODUCTOS](
+    [IdProducto]    [int] IDENTITY(1,1) NOT NULL,
+    [NombreProd]    [varchar](150) NOT NULL,
+    [DescripcionProd][nvarchar](max) NULL,
+    [Precio]        [int] NOT NULL,
+    [IdCatalogo]    [int] NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdProducto] ASC),
+    CONSTRAINT [FK_Productos_Catalogos] FOREIGN KEY ([IdCatalogo]) REFERENCES [dbo].[CATALOGO]([IdCatalogo]),
+    CONSTRAINT [CK_PrecioPositivo]      CHECK ([Precio] >= 0)
+)
 GO
 
--- Roles
-INSERT INTO [dbo].[ROLUSUARIO] ([NombreRol]) VALUES ('Vendedor')  -- IdRol = 1
-INSERT INTO [dbo].[ROLUSUARIO] ([NombreRol]) VALUES ('Cliente')   -- IdRol = 2
+CREATE TABLE [dbo].[DIASSEMANA](
+    [IdDia]    [int] IDENTITY(1,1) NOT NULL,
+    [NombreDia][varchar](20) NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdDia] ASC),
+    UNIQUE ([NombreDia])
+)
 GO
 
--- Categorías
-INSERT INTO [dbo].[CATEGORIAVENDEDOR] ([NombreCategoria]) VALUES ('Comida Rápida')
-INSERT INTO [dbo].[CATEGORIAVENDEDOR] ([NombreCategoria]) VALUES ('Postres / Dulces')
-INSERT INTO [dbo].[CATEGORIAVENDEDOR] ([NombreCategoria]) VALUES ('Bebidas')
+CREATE TABLE [dbo].[HORARIOSV](
+    [IdHorario] [int] IDENTITY(1,1) NOT NULL,
+    [HoraInicio][time](7) NOT NULL,
+    [HoraFin]   [time](7) NOT NULL,
+    [IdDia]     [int] NOT NULL,
+    [IdVendedor][int] NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdHorario] ASC),
+    CONSTRAINT [FK_HORARIOS_DIA]       FOREIGN KEY ([IdDia])      REFERENCES [dbo].[DIASSEMANA]([IdDia]),
+    CONSTRAINT [FK_HORARIOS_VENDEDORES] FOREIGN KEY ([IdVendedor]) REFERENCES [dbo].[VENDEDORES]([IdVendedor])
+)
 GO
 
--- Días de la semana
-INSERT INTO [dbo].[DIASSEMANA] ([NombreDia]) VALUES ('Lunes')
-INSERT INTO [dbo].[DIASSEMANA] ([NombreDia]) VALUES ('Martes')
-INSERT INTO [dbo].[DIASSEMANA] ([NombreDia]) VALUES ('Miércoles')
-INSERT INTO [dbo].[DIASSEMANA] ([NombreDia]) VALUES ('Jueves')
-INSERT INTO [dbo].[DIASSEMANA] ([NombreDia]) VALUES ('Viernes')
-INSERT INTO [dbo].[DIASSEMANA] ([NombreDia]) VALUES ('Sábado')
-INSERT INTO [dbo].[DIASSEMANA] ([NombreDia]) VALUES ('Domingo')
+-- ============================================================
+-- DATOS SEMILLA
+-- ============================================================
+
+INSERT INTO [dbo].[ROLUSUARIO] ([NombreRol]) VALUES ('Vendedor'), ('Cliente')
+GO
+
+INSERT INTO [dbo].[CATEGORIAVENDEDOR] ([NombreCategoria]) VALUES
+    ('Bebidas'), ('Comida Casera'), ('Comida Rápida'),
+    ('Galletas y Brownies'), ('Helados'), ('Otros'),
+    ('Pasabocas y Fritos'), ('Postres / Dulces'),
+    ('Productos Artesanales'), ('Snacks'), ('Tortas y Pasteles')
+GO
+
+INSERT INTO [dbo].[DIASSEMANA] ([NombreDia]) VALUES
+    ('Lunes'), ('Martes'), ('Miércoles'), ('Jueves'),
+    ('Viernes'), ('Sábado'), ('Domingo')
 GO
