@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,16 +11,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
 } from 'react-native';
-import { eliminarProducto } from '../services/vendorService';
 
-export default function ProductEditModal({ visible, onClose, product, onSave, saving, userId, onDeleted }) {
+export default function ProductEditModal({ visible, onClose, product, onSave, saving }) {
   const [nombreProd, setNombreProd] = useState('');
   const [descripcionProd, setDescripcionProd] = useState('');
   const [precio, setPrecio] = useState('');
-  const [deleting, setDeleting] = useState(false);
-  const deletingRef = useRef(false);
 
   const maxNameLength = 20;
   const maxDescLength = 200;
@@ -48,34 +44,6 @@ export default function ProductEditModal({ visible, onClose, product, onSave, sa
       descripcionProd: descripcionProd.trim(),
       precio: Number(precio),
     });
-  };
-
-  const handleDelete = async () => {
-    if (!product || deletingRef.current) return;
-    deletingRef.current = true;
-    setDeleting(true);
-    try {
-      await eliminarProducto(userId, product.idProducto);
-      onClose();
-      if (onDeleted) onDeleted();
-    } catch (error) {
-      Alert.alert('Error', error.message || 'No se pudo eliminar el producto');
-    } finally {
-      deletingRef.current = false;
-      setDeleting(false);
-    }
-  };
-
-  const confirmDelete = () => {
-    if (!product) return;
-    Alert.alert(
-      'Eliminar producto',
-      `¿Estás seguro de eliminar "${product.nombreProd}"?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Eliminar', style: 'destructive', onPress: handleDelete },
-      ]
-    );
   };
 
   if (!product) return null;
@@ -119,26 +87,17 @@ export default function ProductEditModal({ visible, onClose, product, onSave, sa
                 keyboardType="number-pad"
               />
 
-              <View style={styles.buttonRow}>
-                <TouchableOpacity style={[styles.deleteButton, deleting && styles.deleteButtonDisabled]} onPress={confirmDelete} disabled={deleting}>
-                  {deleting ? (
-                    <ActivityIndicator color="#dc2626" size="small" />
-                  ) : (
-                    <Text style={styles.deleteButtonText}>Eliminar</Text>
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.saveButton, (hasErrors || saving) && styles.saveButtonDisabled]}
-                  onPress={handleSave}
-                  disabled={hasErrors || saving}
-                >
-                  {saving ? (
-                    <ActivityIndicator color="#fff" size="small" />
-                  ) : (
-                    <Text style={styles.saveButtonText}>Guardar Cambios</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                style={[styles.saveButton, (hasErrors || saving) && styles.saveButtonDisabled]}
+                onPress={handleSave}
+                disabled={hasErrors || saving}
+              >
+                {saving ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.saveButtonText}>Guardar Cambios</Text>
+                )}
+              </TouchableOpacity>
 
               <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
@@ -208,33 +167,9 @@ const styles = StyleSheet.create({
     marginTop: -12,
     marginBottom: 16,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 4,
-  },
-  deleteButton: {
-    flex: 1,
-    paddingVertical: 14,
-    marginRight: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#fca5a5',
-    backgroundColor: '#fef2f2',
-    alignItems: 'center',
-  },
-  deleteButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#dc2626',
-  },
-  deleteButtonDisabled: {
-    opacity: 0.5,
-  },
   saveButton: {
-    flex: 1,
     paddingVertical: 14,
-    marginLeft: 10,
+    marginTop: 12,
     borderRadius: 12,
     backgroundColor: '#064e3b',
     alignItems: 'center',

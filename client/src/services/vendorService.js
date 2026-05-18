@@ -24,6 +24,26 @@ export const getRecomendados = async () => {
     }
 };
 
+export const getAllVendedores = async () => {
+    try {
+        const response = await fetch(`${API_URL}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("No se pudieron cargar los vendedores");
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const buscarVendedores = async (nombre) => {
     try {
         const response = await fetch(`${API_URL}/buscar?nombre=${encodeURIComponent(nombre)}`, {
