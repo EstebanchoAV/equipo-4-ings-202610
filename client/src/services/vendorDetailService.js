@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:8080/api/vendedores';
-const CATALOGO_API_URL = 'http://localhost:8080/api/catalogos';
+const API_URL = 'https://equipo-4-ings.up.railway.app/api/vendedores';
+const CATALOGO_API_URL = 'https://equipo-4-ings.up.railway.app/api/catalogos';
 
 export const getVendorDetail = async (idVendedor) => {
     try {

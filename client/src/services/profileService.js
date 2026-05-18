@@ -1,7 +1,7 @@
 /**
  * Service for profile management
  */
-const BASE_URL = 'http://localhost:8080/api/perfil';
+const BASE_URL = 'https://equipo-4-ings.up.railway.app/api/perfil';
 
 export const getPerfil = async (idUser) => {
   const response = await fetch(`${BASE_URL}/${idUser}`);
