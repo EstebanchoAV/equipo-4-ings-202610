@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import ScreenLayout from '../Components/ScreenLayout';
 import BoxSha from '../Components/BoxSha';
 import BackButton from '../Components/BackButton';
-import ModalSelectField from '../Components/ModalSelectField';
+import ChecklistSelectField from '../Components/ChecklistSelectField';
 import { getPerfilVendedor, actualizarIdentidadNegocio, getCategorias } from '../services/profileService';
 import { validateBusinessIdentityForm } from '../utils/validators';
 
@@ -26,7 +26,7 @@ const EditBusinessScreen = ({ user }) => {
   const [form, setForm] = useState({
     nombreNegocio: '',
     descripcionNeg: '',
-    idCategoriaV: null
+    idCategoriasV: []
   });
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const EditBusinessScreen = ({ user }) => {
       setForm({
         nombreNegocio: vendedorData.nombreNegocio || '',
         descripcionNeg: vendedorData.descripcionNeg || '',
-        idCategoriaV: vendedorData.categoriaVendedor?.idCategoriaV || null
+        idCategoriasV: vendedorData.categorias?.map(c => c.idCategoriaV) || []
       });
     } catch (error) {
       showAlert('Error', 'No se pudo cargar la información');
@@ -115,13 +115,15 @@ const EditBusinessScreen = ({ user }) => {
         </View>
 
         <View style={styles.formGroup}>
-          <ModalSelectField
-            title="Categoría del negocio"
-            placeholder="Selecciona una categoría..."
-            hintText="Toca para elegir categoría"
-            value={form.idCategoriaV}
-            onSelect={(val) => setForm({ ...form, idCategoriaV: val })}
+          <ChecklistSelectField
+            title="Categorías del negocio"
+            placeholder="Selecciona categorías (1-5)"
+            hintText="Toca para elegir categorías"
+            values={form.idCategoriasV}
+            onSelect={(val) => setForm({ ...form, idCategoriasV: val })}
             options={categories}
+            minSelect={1}
+            maxSelect={5}
             marginBottom={true}
           />
         </View>

@@ -2,6 +2,8 @@ package com.equipo4.antojosupb.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class RegistroRequest {
     private String email;
@@ -17,5 +19,5 @@ public class RegistroRequest {
     private String descripcionNeg;
     private String whatsAppLink;
     private String instagramLink;
-    private Integer idCategoriaV;
+    private List<Integer> idCategoriasV;
 }

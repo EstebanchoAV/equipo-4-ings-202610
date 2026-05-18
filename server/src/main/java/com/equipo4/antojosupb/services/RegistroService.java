@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.regex.Pattern;
 import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 
 import java.time.LocalDateTime;
 
@@ -165,14 +167,13 @@ public class RegistroService {
         if (request.getDescripcionNeg() == null || request.getDescripcionNeg().trim().isEmpty()) {
             throw new IllegalArgumentException("La descripción del negocio es obligatoria.");
         }
-        // Validación del formato de la descripción del negocio: solo letras incluyendo acentos y espacios
-        if (!NAME_PATTERN.matcher(request.getDescripcionNeg()).matches()) {
-            throw new IllegalArgumentException("La descripción del negocio no es válida. Solo puede contener letras y espacios.");
-        }
 
-        // Validacion de la descripcion del negocion: no nulo, no vacío
-        if (request.getDescripcionNeg() == null || request.getDescripcionNeg().trim().isEmpty()) {
-            throw new IllegalArgumentException("La descripción del negocio es obligatoria.");
+        // Validación de categorías: al menos 1, máximo 5
+        if (request.getIdCategoriasV() == null || request.getIdCategoriasV().isEmpty()) {
+            throw new IllegalArgumentException("Debe seleccionar al menos 1 categoría.");
+        }
+        if (request.getIdCategoriasV().size() > 5) {
+            throw new IllegalArgumentException("Máximo 5 categorías permitidas.");
         }
 
         // Validación del contacto del vendedor: no nulo, no vacío
@@ -209,13 +210,14 @@ public class RegistroService {
         vendedor.setUsuario(usuarioGuardado);
         vendedor.setActivo(false);
 
-        if (request.getIdCategoriaV() != null) {
-            CategoriaVendedor categoria = categoriaVendedorRepository.findById(request.getIdCategoriaV())
-                    .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada."));
-            vendedor.setCategoriaVendedor(categoria);
-        } else {
-            throw new IllegalArgumentException("La categoría del vendedor es requerida.");
+        // Guardar múltiples categorías
+        Set<CategoriaVendedor> categorias = new HashSet<>();
+        for (Integer catId : request.getIdCategoriasV()) {
+            CategoriaVendedor categoria = categoriaVendedorRepository.findById(catId)
+                    .orElseThrow(() -> new IllegalArgumentException("Categoría con ID " + catId + " no encontrada."));
+            categorias.add(categoria);
         }
+        vendedor.setCategorias(categorias);
 
         vendedorRepository.save(vendedor);
         return "Vendedor registrado con éxito.";

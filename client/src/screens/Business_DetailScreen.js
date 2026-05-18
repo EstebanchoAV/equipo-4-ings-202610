@@ -13,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import ScreenLayout from '../Components/ScreenLayout';
 import BackButton from '../Components/BackButton';
+import ProductDetailModal from '../Components/ProductDetailModal';
 import { getVendorDetail } from '../services/vendorDetailService';
 
 const { width } = Dimensions.get('window');
@@ -33,6 +34,8 @@ export default function Business_DetailScreen({ route, navigation }) {
 
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showProductModal, setShowProductModal] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -73,6 +76,7 @@ export default function Business_DetailScreen({ route, navigation }) {
 
   const {
     nombreNegocio,
+    nombreCategorias,
     descripcionNeg,
     activo,
     estado,
@@ -165,6 +169,9 @@ export default function Business_DetailScreen({ route, navigation }) {
 
       <View style={styles.infoSection}>
         <Text style={styles.businessName}>{nombreNegocio}</Text>
+        {nombreCategorias && nombreCategorias.length > 0 && (
+          <Text style={styles.categoryLine}>{nombreCategorias.join(', ')}</Text>
+        )}
         <Text style={styles.description}>
           {descripcionNeg || 'Deliciosos snacks locales y postres artesanales preparados cada día con ingredientes frescos.'}
         </Text>
@@ -202,7 +209,14 @@ export default function Business_DetailScreen({ route, navigation }) {
       <View style={styles.productSection}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.productScroll}>
           {productos.map((item) => (
-            <View key={item.idProducto} style={styles.productCard}>
+            <TouchableOpacity
+              key={item.idProducto}
+              style={styles.productCard}
+              onPress={() => {
+                setSelectedProduct(item);
+                setShowProductModal(true);
+              }}
+            >
               <Image
                 source={{ uri: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop' }}
                 style={styles.productImage}
@@ -211,10 +225,20 @@ export default function Business_DetailScreen({ route, navigation }) {
                 <Text style={styles.productName} numberOfLines={1}>{item.nombreProd}</Text>
                 <Text style={styles.productPrice}>${item.precio}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
+
+      {/* Modal de detalle de producto */}
+      <ProductDetailModal
+        visible={showProductModal}
+        onClose={() => {
+          setShowProductModal(false);
+          setSelectedProduct(null);
+        }}
+        product={selectedProduct}
+      />
 
       {/* Floating Action Button for Contact */}
       <TouchableOpacity style={styles.fab} onPress={handleWhatsAppPress}>
@@ -306,6 +330,13 @@ const styles = StyleSheet.create({
     color: '#4B5563',
     lineHeight: 24,
     marginBottom: 20,
+  },
+  categoryLine: {
+    fontSize: 14,
+    color: '#047857',
+    fontWeight: '600',
+    marginBottom: 12,
+    fontStyle: 'italic',
   },
   detailList: {
     gap: 12,

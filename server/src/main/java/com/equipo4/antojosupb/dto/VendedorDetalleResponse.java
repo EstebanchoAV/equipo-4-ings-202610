@@ -12,7 +12,7 @@ import java.util.List;
 public class VendedorDetalleResponse {
     private int idVendedor;
     private String nombreNegocio;
-    private String nombreCategoria;
+    private List<String> nombreCategorias;
     private boolean activo;
     private String estado;
     private String colorTarjeta;

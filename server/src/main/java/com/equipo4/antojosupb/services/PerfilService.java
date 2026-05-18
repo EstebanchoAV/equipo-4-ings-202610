@@ -2,8 +2,7 @@ package com.equipo4.antojosupb.services;
 
 import com.equipo4.antojosupb.dto.PerfilUpdateRequest;
 import com.equipo4.antojosupb.dto.VendedorPerfilRequest;
-import com.equipo4.antojosupb.entities.Usuario;
-import com.equipo4.antojosupb.entities.Vendedor;
+import com.equipo4.antojosupb.entities.*;
 import com.equipo4.antojosupb.repository.UsuarioRepository;
 import com.equipo4.antojosupb.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.equipo4.antojosupb.repository.CategoriaVendedorRepository;
 import com.equipo4.antojosupb.repository.ClienteRepository;
-import com.equipo4.antojosupb.entities.Cliente;
 import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Service
@@ -58,7 +58,6 @@ public class PerfilService {
 
     @Transactional
     public void actualizarContacto(int idUser, PerfilUpdateRequest request) {
-        // Validaciones manuales
         if (request.getNombre() == null || request.getNombre().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre es obligatorio");
         }
@@ -82,7 +81,6 @@ public class PerfilService {
         usuario.setTelefono(request.getTelefono());
         usuarioRepository.save(usuario);
 
-        // Actualizar nombre según el tipo de usuario
         Optional<Vendedor> vendedorOpt = vendedorRepository.findByUsuarioIdUser(idUser);
         if (vendedorOpt.isPresent()) {
             Vendedor v = vendedorOpt.get();
@@ -102,7 +100,6 @@ public class PerfilService {
 
     @Transactional
     public void actualizarIdentidadNegocio(int idUser, VendedorPerfilRequest request) {
-        // Validaciones manuales
         if (request.getNombreNegocio() == null || request.getNombreNegocio().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del negocio es obligatorio");
         }
@@ -115,13 +112,17 @@ public class PerfilService {
         if (request.getDescripcionNeg().length() > 500 || !DESC_PATTERN.matcher(request.getDescripcionNeg()).matches()) {
             throw new IllegalArgumentException("La descripción contiene caracteres no permitidos o es muy larga");
         }
-        if (request.getIdCategoriaV() == null) {
-            throw new IllegalArgumentException("La categoría es obligatoria");
+
+        // Validación de categorías: al menos 1, máximo 5
+        if (request.getIdCategoriasV() == null || request.getIdCategoriasV().isEmpty()) {
+            throw new IllegalArgumentException("Debe seleccionar al menos 1 categoría");
+        }
+        if (request.getIdCategoriasV().size() > 5) {
+            throw new IllegalArgumentException("Máximo 5 categorías permitidas");
         }
 
         Vendedor vendedor = getVendedorPorUsuario(idUser);
         
-        // Validar que el nombre del negocio no esté tomado si se está cambiando
         if (!vendedor.getNombreNegocio().equalsIgnoreCase(request.getNombreNegocio())) {
             if (vendedorRepository.existsByNombreNegocio(request.getNombreNegocio())) {
                 throw new IllegalArgumentException("El nombre del negocio ya está en uso");
@@ -131,11 +132,13 @@ public class PerfilService {
         vendedor.setNombreNegocio(request.getNombreNegocio());
         vendedor.setDescripcionNeg(request.getDescripcionNeg());
 
-
-        
-        com.equipo4.antojosupb.entities.CategoriaVendedor cat = categoriaVendedorRepository.findById(request.getIdCategoriaV())
-                .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
-        vendedor.setCategoriaVendedor(cat);
+        Set<CategoriaVendedor> categorias = new HashSet<>();
+        for (Integer catId : request.getIdCategoriasV()) {
+            CategoriaVendedor cat = categoriaVendedorRepository.findById(catId)
+                    .orElseThrow(() -> new IllegalArgumentException("Categoría con ID " + catId + " no encontrada"));
+            categorias.add(cat);
+        }
+        vendedor.setCategorias(categorias);
         
         vendedorRepository.save(vendedor);
     }
