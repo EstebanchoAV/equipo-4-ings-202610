@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   Image,
   Modal,
   Pressable,
@@ -13,17 +12,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenLayout from '../Components/ScreenLayout';
-import { getRecomendados, buscarVendedores } from '../services/vendorService';
+import { getAllVendedores, buscarVendedores } from '../services/vendorService';
 import { getCategorias } from '../services/profileService';
-
-const CATEGORIES = [
-  { id: 1, name: 'Comida Rápida', icon: 'fast-food', bg: '#FDE8E8', iconColor: '#C0392B' },
-  { id: 2, name: 'Comida Casera', icon: 'restaurant', bg: '#FEF6D8', iconColor: '#F0A500' },
-  { id: 3, name: 'Snacks', icon: 'basket', bg: '#E8F5E9', iconColor: '#27AE60' },
-  { id: 4, name: 'Postres / Dulces', icon: 'ice-cream', bg: '#FCE4EC', iconColor: '#E91E63' },
-  { id: 5, name: 'Helados', icon: 'snow', bg: '#E8F4FD', iconColor: '#3498DB' },
-  { id: 6, name: 'Bebidas', icon: 'cafe', bg: '#FFF3E0', iconColor: '#E67E22' },
-];
 
 const VendorCard = ({ vendor, onPress }) => (
   <TouchableOpacity style={styles.vendorCard} onPress={onPress}>
@@ -41,33 +31,16 @@ const VendorCard = ({ vendor, onPress }) => (
   </TouchableOpacity>
 );
 
-const CategoryCard = ({ category, onPress }) => (
-  <TouchableOpacity
-    style={[styles.categoryCard, { backgroundColor: category.bg }]}
-    onPress={onPress}
-    activeOpacity={0.7}
-  >
-    <View style={styles.categoryIconContainer}>
-      <Ionicons
-        name={category.icon}
-        size={28}
-        color={category.iconColor}
-      />
-    </View>
-    <Text style={styles.categoryName}>{category.name}</Text>
-  </TouchableOpacity>
-);
-
-const FilterModal = ({ 
-  visible, 
-  onClose, 
-  categorias, 
-  selectedCategorias, 
-  onSelectCategorias, 
+const FilterModal = ({
+  visible,
+  onClose,
+  categorias,
+  selectedCategorias,
+  onSelectCategorias,
   selectedDisponibilidad,
   onSelectDisponibilidad,
-  onApply, 
-  onClear 
+  onApply,
+  onClear
 }) => {
   const [localCategorias, setLocalCategorias] = useState(selectedCategorias || []);
   const [localDisponibilidad, setLocalDisponibilidad] = useState(selectedDisponibilidad);
@@ -120,7 +93,7 @@ const FilterModal = ({
       <Pressable style={styles.modalOverlay} onPress={onClose}>
         <Pressable style={styles.filterModalCard} onPress={(e) => e.stopPropagation()}>
           <Text style={styles.filterModalTitle}>Filtrar por</Text>
-          
+
           <Text style={styles.filterSectionLabel}>Categoría</Text>
           <Text style={styles.filterHint}>Selecciona una o más categorías</Text>
           <FlatList
@@ -142,7 +115,7 @@ const FilterModal = ({
               );
             }}
           />
-          
+
           <Text style={[styles.filterSectionLabel, { marginTop: 16 }]}>Disponibilidad</Text>
           <View style={styles.disponibilidadOptions}>
             {FILTER_OPTIONS_DISPONIBILIDAD.map((opt) => {
@@ -161,7 +134,7 @@ const FilterModal = ({
               );
             })}
           </View>
-          
+
           <View style={styles.filterButtons}>
             <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
               <Text style={styles.clearButtonText}>Limpiar</Text>
@@ -176,7 +149,7 @@ const FilterModal = ({
   );
 };
 
-const HomeScreen_Client = ({ navigation }) => {
+const MenuScreen = ({ navigation, route }) => {
   const [searchText, setSearchText] = useState('');
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -184,6 +157,7 @@ const HomeScreen_Client = ({ navigation }) => {
   const [selectedCategorias, setSelectedCategorias] = useState([]);
   const [selectedDisponibilidad, setSelectedDisponibilidad] = useState(null);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const appliedInitialFilter = useRef(false);
 
   useEffect(() => {
     const loadCategorias = async () => {
@@ -198,12 +172,29 @@ const HomeScreen_Client = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
+    const categoryFilter = route.params?.categoryFilter;
+    if (categoryFilter && categorias.length > 0 && !appliedInitialFilter.current) {
+      const match = categorias.find(
+        (c) => c.nombreCategoria.toLowerCase() === categoryFilter.toLowerCase()
+      );
+      if (match) {
+        setSelectedCategorias([match.idCategoriaV]);
+        appliedInitialFilter.current = true;
+        navigation.setParams({ categoryFilter: undefined });
+      }
+    }
+    if (!categoryFilter) {
+      appliedInitialFilter.current = false;
+    }
+  }, [route.params?.categoryFilter, categorias, navigation]);
+
+  useEffect(() => {
     let active = true;
     const fetchVendors = async () => {
       setLoading(true);
       try {
         if (searchText.trim() === '') {
-          const list = await getRecomendados();
+          const list = await getAllVendedores();
           if (active) setVendors(list);
         } else {
           const list = await buscarVendedores(searchText);
@@ -228,27 +219,26 @@ const HomeScreen_Client = ({ navigation }) => {
 
   const filteredVendors = React.useMemo(() => {
     let result = vendors;
-    
+
     if (selectedCategorias.length > 0) {
       result = result.filter((v) => {
         const categoriaNombres = v.nombreCategorias?.map(n => n.toLowerCase()) || [];
-        return categorias.some((c) => 
-          selectedCategorias.includes(c.idCategoriaV) && 
+        return categorias.some((c) =>
+          selectedCategorias.includes(c.idCategoriaV) &&
           categoriaNombres.includes(c.nombreCategoria.toLowerCase())
         );
       });
     }
-    
+
     if (selectedDisponibilidad !== null) {
       result = result.filter((v) => v.activo === selectedDisponibilidad);
     }
-    
+
     return result;
   }, [vendors, selectedCategorias, categorias, selectedDisponibilidad]);
 
   return (
     <ScreenLayout>
-
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.logoContainer}>
@@ -257,7 +247,6 @@ const HomeScreen_Client = ({ navigation }) => {
             </View>
             <Text style={styles.logoText}>Antojos</Text>
           </View>
-          {/* Botón de perfil removido */}
         </View>
 
         <View style={styles.searchContainer}>
@@ -265,7 +254,7 @@ const HomeScreen_Client = ({ navigation }) => {
             <Ionicons name="search" size={20} color="#9ca3af" style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
-              placeholder="¿Cuál es tu antojo hoy?"
+              placeholder="Buscar tiendas..."
               placeholderTextColor="#9ca3af"
               value={searchText}
               onChangeText={setSearchText}
@@ -300,7 +289,7 @@ const HomeScreen_Client = ({ navigation }) => {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
             {searchText.trim() === '' && selectedCategorias.length === 0 && selectedDisponibilidad === null
-              ? 'Recomendados para ti'
+              ? 'Todas las tiendas'
               : searchText.trim() !== '' && selectedCategorias.length > 0 && selectedDisponibilidad !== null
               ? 'Resultados de búsqueda, categoría y disponibilidad'
               : searchText.trim() !== '' && selectedCategorias.length > 0
@@ -315,14 +304,14 @@ const HomeScreen_Client = ({ navigation }) => {
               ? 'Resultados por categoría'
               : selectedDisponibilidad !== null
               ? 'Resultados por disponibilidad'
-              : 'Todos los vendedores'}
+              : 'Todas las tiendas'}
           </Text>
           <View style={styles.accentLine} />
         </View>
 
         <View style={styles.vendorList}>
           {loading ? (
-            <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>Cargando antojos...</Text>
+            <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>Cargando tiendas...</Text>
           ) : filteredVendors.length === 0 ? (
             <Text style={{ textAlign: 'center', marginTop: 10, color: '#9ca3af' }}>No se encontraron negocios</Text>
           ) : (
@@ -336,27 +325,8 @@ const HomeScreen_Client = ({ navigation }) => {
           )}
         </View>
 
-        <TouchableOpacity style={styles.viewMoreButton} onPress={() => navigation.navigate('MenuTab')}>
-          <Text style={styles.viewMoreText}>Ver más antojos</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.categoriesTitle}>Categorías</Text>
-
-        <View style={styles.categoriesGrid}>
-          {CATEGORIES.map((category) => (
-            <CategoryCard
-              key={category.id}
-              category={category}
-              onPress={() => navigation.navigate('MenuTab', {
-                categoryFilter: category.name,
-              })}
-            />
-          ))}
-        </View>
-
         <View style={styles.bottomPadding} />
       </View>
-
     </ScreenLayout>
   );
 };
@@ -391,17 +361,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: '#111827',
-  },
-  profileButton: {
-    padding: 5,
-  },
-  profileIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f3f4f6',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   searchContainer: {
     marginVertical: 15,
@@ -593,55 +552,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#9ca3af',
   },
-  viewMoreButton: {
-    borderWidth: 2,
-    borderColor: '#C0392B',
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginBottom: 25,
-  },
-  viewMoreText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#C0392B',
-  },
-  categoriesTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 15,
-  },
-  categoriesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  categoryCard: {
-    width: '48%',
-    aspectRatio: 1,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  categoryIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  categoryName: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#374151',
-  },
   bottomPadding: {
     height: 20,
   },
 });
 
-export default HomeScreen_Client;
+export default MenuScreen;
