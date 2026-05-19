@@ -3,7 +3,7 @@
  * NOTA: En ambiente local (emuladores u otros dispositivos en red), debes cambiar 
  * 'localhost' por la dirección IP de tu máquina (ej. http://192.168.x.x:8080/...).
  */
-export const API_URL = 'https://equipo-4-ings.up.railway.app/api/auth';
+export const API_URL = 'https://equipo-4-ings-202610-staging.up.railway.app/api/auth';
 
 
 /**

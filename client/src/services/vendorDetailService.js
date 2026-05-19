@@ -1,5 +1,5 @@
-const API_URL = 'https://equipo-4-ings.up.railway.app/api/vendedores';
-const CATALOGO_API_URL = 'https://equipo-4-ings.up.railway.app/api/catalogos';
+const API_URL = 'https://equipo-4-ings-202610-staging.up.railway.app/api/vendedores';
+const CATALOGO_API_URL = 'https://equipo-4-ings-202610-staging.up.railway.app/api/catalogos';
 
 export const getVendorDetail = async (idVendedor) => {
     try {
