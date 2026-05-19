@@ -152,9 +152,7 @@ export default function Business_DetailScreen({ route, navigation }) {
           </View>
           <Text style={styles.logoText}>Antojos</Text>
         </View>
-        <TouchableOpacity style={styles.headerProfile}>
-          <Ionicons name="person" size={24} color="#374151" />
-        </TouchableOpacity>
+
       </View>
 
       <View style={styles.bannerContainer}>
@@ -259,7 +257,6 @@ const styles = StyleSheet.create({
   customHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
@@ -280,14 +277,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '800',
     color: '#111827',
-  },
-  headerProfile: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#F3F4F6',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   bannerContainer: {
     width: width - 40,

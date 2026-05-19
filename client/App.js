@@ -16,6 +16,7 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import VendorScheduleScreen from './src/screens/VendorScheduleScreen';
 import EditContactScreen from './src/screens/EditContactScreen';
 import EditBusinessScreen from './src/screens/EditBusinessScreen';
+import MenuScreen from './src/screens/MenuScreen';
 import { loadSession, saveSession, clearSession } from './src/services/sessionStorage';
 
 const Stack = createNativeStackNavigator();
@@ -32,14 +33,6 @@ const CustomTabButton = ({ children, onPress }) => (
     </View>
   </TouchableOpacity>
 );
-
-function MenuScreen() {
-  return (
-    <View style={styles.dummyContainer}>
-      <Text style={styles.dummyText}>Próximamente</Text>
-    </View>
-  );
-}
 
 function LoginStack({ onLoginSuccess }) {
   return (
@@ -260,14 +253,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  dummyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  dummyText: {
-    fontSize: 18,
-    color: '#9ca3af',
-  },
+
 });
