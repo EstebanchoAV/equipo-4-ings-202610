@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth/vendedor")
-@CrossOrigin(origins = "*")
 public class HorarioVendedorController {
 
     @Autowired

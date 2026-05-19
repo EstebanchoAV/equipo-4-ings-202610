@@ -13,7 +13,6 @@ import com.equipo4.antojosupb.services.CatalogoService;
 
 @RestController
 @RequestMapping("/api/auth/vendedor")
-@CrossOrigin(origins = "*")
 public class CatalogoVendedorController {
 
     @Autowired

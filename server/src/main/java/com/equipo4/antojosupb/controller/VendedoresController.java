@@ -5,7 +5,6 @@ import com.equipo4.antojosupb.dto.VendedorDetalleResponse;
 import com.equipo4.antojosupb.services.VendedoresPublicosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/vendedores")
-@CrossOrigin(origins = "*")
 public class VendedoresController {
 
     @Autowired

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/perfil")
-@CrossOrigin(origins = "*")
 public class PerfilController {
 
     @Autowired

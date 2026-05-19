@@ -10,7 +10,6 @@ import com.equipo4.antojosupb.services.CatalogoService;
 
 @RestController
 @RequestMapping("/api/catalogos")
-@CrossOrigin(origins = "*")
 public class CatalogoController {
 
     @Autowired

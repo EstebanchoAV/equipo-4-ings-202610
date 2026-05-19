@@ -15,7 +15,6 @@ import com.equipo4.antojosupb.services.ProductosService;
  */
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin(origins = "*")
 public class ProductosController {
 
     @Autowired
