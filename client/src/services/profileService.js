@@ -1,7 +1,7 @@
 /**
  * Service for profile management
  */
-const BASE_URL = 'https://equipo-4-ings-202610-staging.up.railway.app/api/perfil';
+const BASE_URL = 'https://equipo-4-ings-202610-production.up.railway.app/api/perfil';
 
 export const getPerfil = async (idUser) => {
   const response = await fetch(`${BASE_URL}/${idUser}`);

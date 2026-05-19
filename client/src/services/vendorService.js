@@ -1,8 +1,8 @@
 // src/services/vendorService.js
 
 // Usando la misma convención de host que authService
-export const API_URL = 'https://equipo-4-ings-202610-staging.up.railway.app/api/vendedores';
-const AUTH_API_URL = 'https://equipo-4-ings-202610-staging.up.railway.app/api/auth/vendedor';
+export const API_URL = 'https://equipo-4-ings-202610-production.up.railway.app/api/vendedores';
+const AUTH_API_URL = 'https://equipo-4-ings-202610-production.up.railway.app/api/auth/vendedor';
 
 export const getRecomendados = async () => {
     try {
